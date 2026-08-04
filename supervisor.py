@@ -1,15 +1,17 @@
 import json
-import os
 from typing import Dict, Any
 from memory.state import AgentState
 from prompts.supervisor_prompt import SUPERVISOR_SYSTEM_PROMPT
+from utils.llm_factory import get_llm_for_task
 
 class SupervisorAgent:
     """
     Supervisor Agent responsible for classifying patient query intent and routing to specialized agents.
+    Uses Groq API Key 1 for intent routing tasks.
     """
     def __init__(self):
         self.prompt = SUPERVISOR_SYSTEM_PROMPT
+        self.llm = get_llm_for_task("supervisor")
 
     def classify_intent(self, state: AgentState) -> Dict[str, Any]:
         """
@@ -25,7 +27,26 @@ class SupervisorAgent:
 
         user_text = last_user_message.lower()
         
-        # Rule-based / Keyword intent fallback & detection logic
+        # Try LLM classification first if Groq LLM is available
+        if self.llm:
+            try:
+                from langchain_core.messages import SystemMessage, HumanMessage
+                res = self.llm.invoke([
+                    SystemMessage(content=self.prompt),
+                    HumanMessage(content=f"Patient Message: {last_user_message}")
+                ])
+                content = str(res.content)
+                if "{" in content and "}" in content:
+                    json_str = content[content.find("{"):content.rfind("}")+1]
+                    parsed = json.loads(json_str)
+                    return {
+                        "current_intent": parsed.get("current_intent", "symptom"),
+                        "next_node": parsed.get("next_node", "symptom_agent")
+                    }
+            except Exception as e:
+                print(f"Supervisor LLM classification fallback: {e}")
+
+        # Rule-based fallback classification
         intent = "symptom"
         next_node = "symptom_agent"
 
@@ -48,9 +69,6 @@ class SupervisorAgent:
         }
 
     def route_next_node(self, state: AgentState) -> str:
-        """
-        Conditional edge routing helper function for LangGraph.
-        """
         return state.get("next_node", "symptom_agent")
 
 def classify_intent(state: AgentState) -> Dict[str, Any]:

@@ -3,20 +3,20 @@ from memory.state import AgentState
 from prompts.medication_prompt import MEDICATION_SYSTEM_PROMPT
 from tools.medicine_lookup import MedicineLookupTool
 from utils.helpers import load_json_file
+from utils.llm_factory import get_llm_for_task
 
 class MedicationAgent:
     """
     Medication Information Agent for drug details, dosages, and allergy checks (FR-03).
+    Uses Groq API Key 1 for medication information tasks.
     """
     def __init__(self):
         self.system_prompt = MEDICATION_SYSTEM_PROMPT
         self.medicine_tool = MedicineLookupTool()
+        self.llm = get_llm_for_task("medication")
         self.tools = [self.medicine_tool.query_medicine]
 
     def cross_check_allergy(self, medicine_name: str, patient_id: str) -> str:
-        """
-        Cross-checks target medicine against patient known allergies stored in patients.json.
-        """
         patients = load_json_file("data/patients.json", default=[])
         patient = next((p for p in patients if p.get("patient_id") == patient_id), {})
         allergies = patient.get("known_allergies", [])
@@ -29,9 +29,6 @@ class MedicationAgent:
         return "✅ No conflicting patient allergies detected in EHR records."
 
     def get_medication_info(self, state: AgentState) -> Dict[str, Any]:
-        """
-        Retrieves medication details and performs allergy check for current patient.
-        """
         messages = state.get("messages", [])
         last_user_message = ""
         for msg in reversed(messages):
@@ -58,6 +55,19 @@ class MedicationAgent:
             )
         else:
             output_text = f"### Medication Information\n\n{med_info.get('message')}\n\n🛡️ **Allergy Status:** {allergy_status}"
+
+        # Enhance explanation with LLM if available
+        if self.llm:
+            try:
+                from langchain_core.messages import SystemMessage, HumanMessage
+                res = self.llm.invoke([
+                    SystemMessage(content=self.system_prompt),
+                    HumanMessage(content=f"Patient Query: {last_user_message}\nStructured Medication Data:\n{output_text}")
+                ])
+                if res and res.content:
+                    output_text = str(res.content)
+            except Exception as e:
+                print(f"Medication Agent LLM call fallback: {e}")
 
         agent_outputs = state.get("agent_outputs", {})
         agent_outputs["medication_info"] = output_text

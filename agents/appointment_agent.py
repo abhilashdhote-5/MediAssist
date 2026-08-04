@@ -3,15 +3,18 @@ from memory.state import AgentState
 from prompts.appointment_prompt import APPOINTMENT_SYSTEM_PROMPT
 from tools.appointment_tool import AppointmentTool
 from tools.doctor_lookup import DoctorLookupTool
+from utils.llm_factory import get_llm_for_task
 
 class AppointmentAgent:
     """
     Appointment Management Agent for handling doctor appointment requests (FR-01).
+    Uses Groq API Key 1 for appointment management tasks.
     """
     def __init__(self):
         self.system_prompt = APPOINTMENT_SYSTEM_PROMPT
         self.appointment_tool = AppointmentTool()
         self.doctor_tool = DoctorLookupTool()
+        self.llm = get_llm_for_task("appointment")
         self.tools = [
             self.appointment_tool.book_appointment,
             self.appointment_tool.reschedule_appointment,
@@ -20,9 +23,6 @@ class AppointmentAgent:
         ]
 
     def extract_booking_details(self, user_text: str) -> Dict[str, Any]:
-        """
-        Extracts doctor, date, slot, and action parameters from user input text.
-        """
         text = user_text.lower()
         action = "book"
         if "cancel" in text:
@@ -44,9 +44,6 @@ class AppointmentAgent:
         }
 
     def process_appointment(self, state: AgentState) -> Dict[str, Any]:
-        """
-        Processes appointment intent, executes tools, and stores output in state.
-        """
         messages = state.get("messages", [])
         last_user_message = ""
         for msg in reversed(messages):
