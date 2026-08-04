@@ -1,38 +1,669 @@
 [
   {
-    "symptom_id": "SYM001",
-    "primary_symptom": "Fever and Chill",
-    "risk_level": "Moderate",
-    "care_guidance": "Stay hydrated, rest, and monitor body temperature regularly. Use over-the-counter antipyretics if needed.",
-    "recommended_specialty": "General Medicine",
-    "red_flags": [
-      "Fever above 103°F (39.4°C)",
-      "Difficulty breathing",
-      "Stiff neck or confusion"
+    "patient_id": "PAT0001",
+    "full_name": "Amber Perez",
+    "age": 66,
+    "gender": "Male",
+    "blood_group": "O+",
+    "known_allergies": [],
+    "chronic_conditions": [
+      "Asthma",
+      "Hypertension"
     ]
   },
   {
-    "symptom_id": "SYM002",
-    "primary_symptom": "Chest Tightness",
-    "risk_level": "Critical",
-    "care_guidance": "Chest pain or tightness requires immediate emergency medical evaluation.",
-    "recommended_specialty": "Cardiology",
-    "red_flags": [
-      "Pain radiating to left arm or jaw",
-      "Shortness of breath",
-      "Cold sweats or dizziness"
+    "patient_id": "PAT0002",
+    "full_name": "Bobby Hall",
+    "age": 80,
+    "gender": "Male",
+    "blood_group": "B-",
+    "known_allergies": [
+      "Pollen"
+    ],
+    "chronic_conditions": [
+      "Thyroid"
     ]
   },
   {
-    "symptom_id": "SYM003",
-    "primary_symptom": "Persistent Cough",
-    "risk_level": "Low",
-    "care_guidance": "Drink warm liquids, use honey or cough drops, and avoid irritants or smoke.",
-    "recommended_specialty": "Pulmonology",
-    "red_flags": [
-      "Coughing up blood",
-      "High fever lasting over 3 days",
-      "Shortness of breath at rest"
+    "patient_id": "PAT0003",
+    "full_name": "Donald Reid",
+    "age": 58,
+    "gender": "Male",
+    "blood_group": "A+",
+    "known_allergies": [
+      "Peanuts",
+      "Penicillin"
+    ],
+    "chronic_conditions": [
+      "Arthritis"
+    ]
+  },
+  {
+    "patient_id": "PAT0004",
+    "full_name": "Jacob Clark",
+    "age": 83,
+    "gender": "Male",
+    "blood_group": "B+",
+    "known_allergies": [
+      "Latex"
+    ],
+    "chronic_conditions": [
+      "Asthma"
+    ]
+  },
+  {
+    "patient_id": "PAT0005",
+    "full_name": "Timothy Wong",
+    "age": 48,
+    "gender": "Female",
+    "blood_group": "A-",
+    "known_allergies": [
+      "Latex"
+    ],
+    "chronic_conditions": [
+      "Arthritis"
+    ]
+  },
+  {
+    "patient_id": "PAT0006",
+    "full_name": "Carolyn Daniel",
+    "age": 28,
+    "gender": "Female",
+    "blood_group": "AB-",
+    "known_allergies": [
+      "Latex"
+    ],
+    "chronic_conditions": []
+  },
+  {
+    "patient_id": "PAT0007",
+    "full_name": "James Mayo",
+    "age": 68,
+    "gender": "Male",
+    "blood_group": "AB+",
+    "known_allergies": [
+      "Peanuts",
+      "Aspirin"
+    ],
+    "chronic_conditions": [
+      "Hypertension",
+      "Diabetes Type 2"
+    ]
+  },
+  {
+    "patient_id": "PAT0008",
+    "full_name": "Kristin Cohen",
+    "age": 30,
+    "gender": "Male",
+    "blood_group": "B-",
+    "known_allergies": [
+      "Dust",
+      "Penicillin"
+    ],
+    "chronic_conditions": [
+      "Thyroid"
+    ]
+  },
+  {
+    "patient_id": "PAT0009",
+    "full_name": "Patty Perez",
+    "age": 65,
+    "gender": "Female",
+    "blood_group": "B+",
+    "known_allergies": [
+      "Peanuts",
+      "Dust"
+    ],
+    "chronic_conditions": [
+      "Hypertension"
+    ]
+  },
+  {
+    "patient_id": "PAT0010",
+    "full_name": "Ethan Adams",
+    "age": 19,
+    "gender": "Other",
+    "blood_group": "AB+",
+    "known_allergies": [
+      "Latex"
+    ],
+    "chronic_conditions": [
+      "Arthritis"
+    ]
+  },
+  {
+    "patient_id": "PAT0011",
+    "full_name": "Tommy Walter",
+    "age": 37,
+    "gender": "Female",
+    "blood_group": "AB+",
+    "known_allergies": [
+      "Peanuts"
+    ],
+    "chronic_conditions": [
+      "Asthma",
+      "Arthritis"
+    ]
+  },
+  {
+    "patient_id": "PAT0012",
+    "full_name": "Matthew Foster",
+    "age": 82,
+    "gender": "Female",
+    "blood_group": "AB+",
+    "known_allergies": [
+      "Aspirin"
+    ],
+    "chronic_conditions": [
+      "Hypertension",
+      "Diabetes Type 2"
+    ]
+  },
+  {
+    "patient_id": "PAT0013",
+    "full_name": "Judy Baker",
+    "age": 18,
+    "gender": "Female",
+    "blood_group": "B+",
+    "known_allergies": [
+      "Penicillin"
+    ],
+    "chronic_conditions": [
+      "Diabetes Type 2",
+      "Asthma"
+    ]
+  },
+  {
+    "patient_id": "PAT0014",
+    "full_name": "Justin Baker",
+    "age": 19,
+    "gender": "Male",
+    "blood_group": "A-",
+    "known_allergies": [
+      "Peanuts",
+      "Aspirin"
+    ],
+    "chronic_conditions": [
+      "Thyroid"
+    ]
+  },
+  {
+    "patient_id": "PAT0015",
+    "full_name": "Stephanie Ross",
+    "age": 36,
+    "gender": "Female",
+    "blood_group": "B+",
+    "known_allergies": [
+      "Latex"
+    ],
+    "chronic_conditions": [
+      "Diabetes Type 2"
+    ]
+  },
+  {
+    "patient_id": "PAT0016",
+    "full_name": "Zachary Hicks",
+    "age": 44,
+    "gender": "Other",
+    "blood_group": "B-",
+    "known_allergies": [
+      "Dust"
+    ],
+    "chronic_conditions": [
+      "Asthma",
+      "Diabetes Type 2"
+    ]
+  },
+  {
+    "patient_id": "PAT0017",
+    "full_name": "Anthony Rodriguez",
+    "age": 48,
+    "gender": "Male",
+    "blood_group": "B+",
+    "known_allergies": [
+      "Dust"
+    ],
+    "chronic_conditions": [
+      "Hypertension"
+    ]
+  },
+  {
+    "patient_id": "PAT0018",
+    "full_name": "Rebecca Henderson",
+    "age": 52,
+    "gender": "Male",
+    "blood_group": "A-",
+    "known_allergies": [
+      "Penicillin",
+      "Peanuts"
+    ],
+    "chronic_conditions": [
+      "Thyroid",
+      "Hypertension"
+    ]
+  },
+  {
+    "patient_id": "PAT0019",
+    "full_name": "James Ferrell",
+    "age": 76,
+    "gender": "Female",
+    "blood_group": "AB+",
+    "known_allergies": [
+      "Penicillin"
+    ],
+    "chronic_conditions": [
+      "Hypertension",
+      "Arthritis"
+    ]
+  },
+  {
+    "patient_id": "PAT0020",
+    "full_name": "Tricia Valencia",
+    "age": 42,
+    "gender": "Female",
+    "blood_group": "AB-",
+    "known_allergies": [
+      "Peanuts"
+    ],
+    "chronic_conditions": [
+      "Arthritis"
+    ]
+  },
+  {
+    "patient_id": "PAT0021",
+    "full_name": "Nathan Maldonado",
+    "age": 69,
+    "gender": "Other",
+    "blood_group": "AB-",
+    "known_allergies": [
+      "Penicillin"
+    ],
+    "chronic_conditions": [
+      "Diabetes Type 2"
+    ]
+  },
+  {
+    "patient_id": "PAT0022",
+    "full_name": "Debra Davidson",
+    "age": 51,
+    "gender": "Male",
+    "blood_group": "A-",
+    "known_allergies": [
+      "Penicillin"
+    ],
+    "chronic_conditions": [
+      "Hypertension"
+    ]
+  },
+  {
+    "patient_id": "PAT0023",
+    "full_name": "Jeffrey Chavez",
+    "age": 83,
+    "gender": "Male",
+    "blood_group": "O+",
+    "known_allergies": [
+      "Dust",
+      "Aspirin"
+    ],
+    "chronic_conditions": [
+      "Thyroid"
+    ]
+  },
+  {
+    "patient_id": "PAT0024",
+    "full_name": "Sherri Baker",
+    "age": 73,
+    "gender": "Male",
+    "blood_group": "B-",
+    "known_allergies": [
+      "Dust"
+    ],
+    "chronic_conditions": [
+      "Arthritis"
+    ]
+  },
+  {
+    "patient_id": "PAT0025",
+    "full_name": "Cassandra Gaines",
+    "age": 33,
+    "gender": "Other",
+    "blood_group": "AB+",
+    "known_allergies": [
+      "Pollen",
+      "Penicillin"
+    ],
+    "chronic_conditions": [
+      "Diabetes Type 2"
+    ]
+  },
+  {
+    "patient_id": "PAT0026",
+    "full_name": "Elizabeth Fowler",
+    "age": 34,
+    "gender": "Male",
+    "blood_group": "O+",
+    "known_allergies": [
+      "Aspirin",
+      "Pollen"
+    ],
+    "chronic_conditions": [
+      "Thyroid",
+      "Diabetes Type 2"
+    ]
+  },
+  {
+    "patient_id": "PAT0027",
+    "full_name": "Brittany Farmer",
+    "age": 56,
+    "gender": "Female",
+    "blood_group": "A+",
+    "known_allergies": [
+      "Aspirin"
+    ],
+    "chronic_conditions": []
+  },
+  {
+    "patient_id": "PAT0028",
+    "full_name": "Paula Moreno",
+    "age": 59,
+    "gender": "Female",
+    "blood_group": "O-",
+    "known_allergies": [
+      "Dust",
+      "Peanuts"
+    ],
+    "chronic_conditions": [
+      "Arthritis"
+    ]
+  },
+  {
+    "patient_id": "PAT0029",
+    "full_name": "Fred Smith",
+    "age": 28,
+    "gender": "Female",
+    "blood_group": "AB-",
+    "known_allergies": [
+      "Aspirin",
+      "Peanuts"
+    ],
+    "chronic_conditions": [
+      "Arthritis",
+      "Hypertension"
+    ]
+  },
+  {
+    "patient_id": "PAT0030",
+    "full_name": "Sherry Decker",
+    "age": 57,
+    "gender": "Male",
+    "blood_group": "B-",
+    "known_allergies": [],
+    "chronic_conditions": [
+      "Arthritis"
+    ]
+  },
+  {
+    "patient_id": "PAT0031",
+    "full_name": "Anthony Humphrey",
+    "age": 78,
+    "gender": "Other",
+    "blood_group": "A-",
+    "known_allergies": [
+      "Penicillin"
+    ],
+    "chronic_conditions": [
+      "Hypertension"
+    ]
+  },
+  {
+    "patient_id": "PAT0032",
+    "full_name": "Angelica Tucker",
+    "age": 67,
+    "gender": "Female",
+    "blood_group": "O+",
+    "known_allergies": [
+      "Pollen",
+      "Aspirin"
+    ],
+    "chronic_conditions": [
+      "Arthritis"
+    ]
+  },
+  {
+    "patient_id": "PAT0033",
+    "full_name": "Philip Cannon",
+    "age": 72,
+    "gender": "Male",
+    "blood_group": "B+",
+    "known_allergies": [
+      "Peanuts"
+    ],
+    "chronic_conditions": [
+      "Asthma"
+    ]
+  },
+  {
+    "patient_id": "PAT0034",
+    "full_name": "John Pierce",
+    "age": 76,
+    "gender": "Male",
+    "blood_group": "O-",
+    "known_allergies": [
+      "Penicillin",
+      "Latex"
+    ],
+    "chronic_conditions": [
+      "Asthma"
+    ]
+  },
+  {
+    "patient_id": "PAT0035",
+    "full_name": "Shane Henderson",
+    "age": 38,
+    "gender": "Other",
+    "blood_group": "O-",
+    "known_allergies": [
+      "Pollen"
+    ],
+    "chronic_conditions": [
+      "Thyroid"
+    ]
+  },
+  {
+    "patient_id": "PAT0036",
+    "full_name": "Joshua Blair",
+    "age": 48,
+    "gender": "Female",
+    "blood_group": "O-",
+    "known_allergies": [
+      "Dust",
+      "Peanuts"
+    ],
+    "chronic_conditions": [
+      "Thyroid"
+    ]
+  },
+  {
+    "patient_id": "PAT0037",
+    "full_name": "Eric Carney",
+    "age": 60,
+    "gender": "Female",
+    "blood_group": "A-",
+    "known_allergies": [
+      "Aspirin"
+    ],
+    "chronic_conditions": [
+      "Hypertension",
+      "Diabetes Type 2"
+    ]
+  },
+  {
+    "patient_id": "PAT0038",
+    "full_name": "Jessica Holmes",
+    "age": 37,
+    "gender": "Other",
+    "blood_group": "B-",
+    "known_allergies": [
+      "Peanuts"
+    ],
+    "chronic_conditions": [
+      "Thyroid"
+    ]
+  },
+  {
+    "patient_id": "PAT0039",
+    "full_name": "Danny Morgan",
+    "age": 77,
+    "gender": "Female",
+    "blood_group": "A+",
+    "known_allergies": [
+      "Pollen"
+    ],
+    "chronic_conditions": [
+      "Diabetes Type 2"
+    ]
+  },
+  {
+    "patient_id": "PAT0040",
+    "full_name": "Crystal Robinson",
+    "age": 20,
+    "gender": "Other",
+    "blood_group": "O+",
+    "known_allergies": [],
+    "chronic_conditions": [
+      "Thyroid"
+    ]
+  },
+  {
+    "patient_id": "PAT0041",
+    "full_name": "Mark Perez",
+    "age": 46,
+    "gender": "Female",
+    "blood_group": "B-",
+    "known_allergies": [
+      "Penicillin",
+      "Dust"
+    ],
+    "chronic_conditions": [
+      "Thyroid",
+      "Arthritis"
+    ]
+  },
+  {
+    "patient_id": "PAT0042",
+    "full_name": "Shannon Jones",
+    "age": 61,
+    "gender": "Other",
+    "blood_group": "O+",
+    "known_allergies": [
+      "Pollen"
+    ],
+    "chronic_conditions": [
+      "Thyroid"
+    ]
+  },
+  {
+    "patient_id": "PAT0043",
+    "full_name": "Michael Lewis",
+    "age": 21,
+    "gender": "Female",
+    "blood_group": "A+",
+    "known_allergies": [],
+    "chronic_conditions": [
+      "Hypertension"
+    ]
+  },
+  {
+    "patient_id": "PAT0044",
+    "full_name": "Timothy Duncan",
+    "age": 41,
+    "gender": "Male",
+    "blood_group": "AB+",
+    "known_allergies": [
+      "Aspirin"
+    ],
+    "chronic_conditions": [
+      "Hypertension",
+      "Thyroid"
+    ]
+  },
+  {
+    "patient_id": "PAT0045",
+    "full_name": "Richard Aguirre",
+    "age": 66,
+    "gender": "Female",
+    "blood_group": "O+",
+    "known_allergies": [
+      "Dust",
+      "Peanuts"
+    ],
+    "chronic_conditions": [
+      "Diabetes Type 2",
+      "Arthritis"
+    ]
+  },
+  {
+    "patient_id": "PAT0046",
+    "full_name": "Brent Jordan",
+    "age": 24,
+    "gender": "Female",
+    "blood_group": "B-",
+    "known_allergies": [
+      "Penicillin"
+    ],
+    "chronic_conditions": [
+      "Asthma"
+    ]
+  },
+  {
+    "patient_id": "PAT0047",
+    "full_name": "John Daniel",
+    "age": 49,
+    "gender": "Male",
+    "blood_group": "A+",
+    "known_allergies": [],
+    "chronic_conditions": [
+      "Asthma"
+    ]
+  },
+  {
+    "patient_id": "PAT0048",
+    "full_name": "Victoria Garcia",
+    "age": 32,
+    "gender": "Other",
+    "blood_group": "B-",
+    "known_allergies": [
+      "Peanuts"
+    ],
+    "chronic_conditions": [
+      "Thyroid"
+    ]
+  },
+  {
+    "patient_id": "PAT0049",
+    "full_name": "Gerald Hensley",
+    "age": 32,
+    "gender": "Male",
+    "blood_group": "AB+",
+    "known_allergies": [
+      "Aspirin",
+      "Dust"
+    ],
+    "chronic_conditions": [
+      "Hypertension"
+    ]
+  },
+  {
+    "patient_id": "PAT0050",
+    "full_name": "Connor West",
+    "age": 66,
+    "gender": "Female",
+    "blood_group": "B-",
+    "known_allergies": [
+      "Latex"
+    ],
+    "chronic_conditions": [
+      "Diabetes Type 2"
     ]
   }
 ]
