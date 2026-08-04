@@ -7,3 +7,4 @@ env/
 *.sqlite
 *.db
 .pytest_cache/
+.venv/
