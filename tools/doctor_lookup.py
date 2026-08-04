@@ -1,29 +1,64 @@
-from typing import Any, Dict, List, Optional
+import os
+from typing import List, Dict, Optional
 from utils.helpers import load_json_file
+
+DATA_FILE = "data/doctors.json"
+
 
 class DoctorLookupTool:
     """
-    Tool for querying doctor directory and schedule availability.
+    Tool for looking up doctors from the data/doctors.json file.
+    Supports search by specialty, name, and doctor ID.
     """
-    def __init__(self, json_path: str = "data/doctors.json"):
-        self.json_path = json_path
 
-    def search_doctors(self, specialty: Optional[str] = None, day: Optional[str] = None) -> List[Dict[str, Any]]:
+    def _load_doctors(self) -> List[Dict]:
+        return load_json_file(DATA_FILE, default=[])
+
+    def search_doctors(self, specialty: str = "", name: str = "") -> List[Dict]:
         """
-        Searches available doctors matching requested specialty and/or available day.
+        Search doctors by specialty and/or name substring.
+        Returns all doctors if no filters are provided.
         """
-        doctors = load_json_file(self.json_path, default=[])
+        doctors = self._load_doctors()
         results = []
-        for doc in doctors:
-            match_specialty = True
-            match_day = True
+        for doctor in doctors:
+            specialty_match = (
+                specialty.lower() in doctor.get("specialty", "").lower()
+                if specialty else True
+            )
+            name_match = (
+                name.lower() in doctor.get("full_name", "").lower()
+                if name else True
+            )
+            if specialty_match and name_match:
+                results.append(doctor)
+        return results
 
-            if specialty:
-                match_specialty = specialty.lower() in doc.get("specialty", "").lower()
-            if day:
-                match_day = any(day.lower() in d.lower() for d in doc.get("available_days", []))
+    def get_doctor(self, doctor_id: str = "", name: str = "") -> Dict:
+        """
+        Get a specific doctor by ID or exact name.
+        """
+        doctors = self._load_doctors()
+        for doctor in doctors:
+            if doctor_id and doctor.get("doctor_id", "").upper() == doctor_id.upper():
+                return doctor
+            if name and name.lower() == doctor.get("full_name", "").lower():
+                return doctor
+        return {"error": "Doctor not found"}
 
-            if match_specialty and match_day:
-                results.append(doc)
+    def get_all_specialties(self) -> List[str]:
+        """Returns a unique sorted list of all specialties available."""
+        doctors = self._load_doctors()
+        return sorted(set(d.get("specialty", "") for d in doctors if d.get("specialty")))
 
-        return results if results else doctors
+
+# ---------------------------------------------------------------------------
+# Backward-compatible standalone functions
+# ---------------------------------------------------------------------------
+
+def find_doctors(specialty: str) -> List[Dict]:
+    return DoctorLookupTool().search_doctors(specialty=specialty)
+
+
+def get_doctor(name: str) -> Dict:
+    return DoctorLookupTool().get_doctor(name=name)

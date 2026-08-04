@@ -7,5 +7,5 @@ __all__ = [
     "DoctorLookupTool",
     "AppointmentTool",
     "MedicineLookupTool",
-    "ReportReaderTool"
+    "ReportReaderTool",
 ]

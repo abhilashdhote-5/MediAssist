@@ -1,35 +1,73 @@
-from typing import Any, Dict, Optional
+from typing import Dict, List, Optional
 from utils.helpers import load_json_file
-from utils.pdf_parser import extract_pdf_text
+
+REPORTS_DATA_FILE = "data/medical_reports.json"
+
 
 class ReportReaderTool:
     """
-    Tool for extracting text from PDF reports and fetching structured lab report JSON data.
+    Tool for reading structured medical reports from data/medical_reports.json
+    and PDF lab report files from the file system.
     """
-    def __init__(self, reports_dir: str = "data/sample_reports", json_path: str = "data/medical_reports.json"):
-        self.reports_dir = reports_dir
-        self.json_path = json_path
 
-    def extract_text_from_pdf(self, pdf_file_path: str) -> str:
-        """
-        Extracts raw text content from a laboratory report PDF file.
-        """
-        return extract_pdf_text(pdf_file_path)
+    def _load_reports(self) -> List[Dict]:
+        return load_json_file(REPORTS_DATA_FILE, default=[])
 
-    def get_structured_report(self, report_id: str) -> Dict[str, Any]:
+    def get_structured_report(self, report_id: str) -> Dict:
         """
-        Queries medical_reports.json for pre-parsed laboratory parameters and reference ranges.
+        Retrieves a structured lab report by report ID from data/medical_reports.json.
         """
-        reports = load_json_file(self.json_path, default=[])
-        for rep in reports:
-            if rep.get("report_id") == report_id:
-                return rep
-        
-        # Return fallback default first report if report_id matches or default requested
-        if reports:
-            return reports[0]
-            
+        reports = self._load_reports()
+        for report in reports:
+            if report.get("report_id", "").upper() == report_id.upper():
+                return report
+        return {"error": f"Report '{report_id}' not found in database."}
+
+    def get_reports_for_patient(self, patient_id: str) -> List[Dict]:
+        """Returns all reports belonging to a specific patient."""
+        reports = self._load_reports()
+        return [r for r in reports if r.get("patient_id") == patient_id]
+
+    def extract_text_from_pdf(self, pdf_path: str) -> str:
+        """
+        Extracts text from a PDF file using pypdf or falls back to plain-text read.
+        """
+        import os
+        if not os.path.exists(pdf_path):
+            return f"[Error] PDF file not found at: {pdf_path}"
+
+        try:
+            from pypdf import PdfReader
+            reader = PdfReader(pdf_path)
+            text = ""
+            for page in reader.pages:
+                text += page.extract_text() or ""
+            return text.strip()
+        except Exception as e:
+            try:
+                with open(pdf_path, "r", encoding="utf-8", errors="ignore") as f:
+                    return f.read()
+            except Exception:
+                return f"[Error extracting PDF text: {str(e)}]"
+
+    def get_report_with_pdf_text(self, report_id: str) -> Dict:
+        """
+        Returns structured report data and any available PDF text content.
+        """
+        report = self.get_structured_report(report_id)
+        if "error" in report:
+            return report
+
+        pdf_path = report.get("file_path", "")
+        pdf_text = ""
+        if pdf_path:
+            pdf_text = self.extract_text_from_pdf(pdf_path)
+
         return {
-            "status": "Not Found",
-            "message": f"Medical report '{report_id}' not found."
+            **report,
+            "pdf_text": pdf_text,
         }
+
+    def highlight_abnormalities(self, lab_results: List[Dict]) -> List[Dict]:
+        """Returns only abnormal lab results (High or Low status)."""
+        return [r for r in lab_results if r.get("status") in ("High", "Low")]

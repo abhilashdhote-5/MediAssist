@@ -14,5 +14,5 @@ __all__ = [
     "ReportAgent",
     "explain_lab_report",
     "ReflectionNode",
-    "validate_response"
+    "validate_response",
 ]
