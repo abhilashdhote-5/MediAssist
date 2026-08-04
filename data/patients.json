@@ -1,0 +1,29 @@
+[
+  {
+    "patient_id": "PAT8801",
+    "full_name": "Alice Smith",
+    "age": 34,
+    "gender": "Female",
+    "blood_group": "O+",
+    "known_allergies": ["Penicillin", "Peanuts"],
+    "chronic_conditions": ["Asthma"]
+  },
+  {
+    "patient_id": "PAT8802",
+    "full_name": "John Doe",
+    "age": 45,
+    "gender": "Male",
+    "blood_group": "A+",
+    "known_allergies": ["Aspirin"],
+    "chronic_conditions": ["Hypertension"]
+  },
+  {
+    "patient_id": "PAT8803",
+    "full_name": "Robert Johnson",
+    "age": 60,
+    "gender": "Male",
+    "blood_group": "B-",
+    "known_allergies": [],
+    "chronic_conditions": ["Type 2 Diabetes"]
+  }
+]

@@ -1,0 +1,52 @@
+[
+  {
+    "medicine_id": "MED101",
+    "brand_name": "Paracetamol / Tylenol",
+    "generic_name": "Acetaminophen",
+    "category": "Analgesic / Antipyretic",
+    "purpose": "Relief of mild to moderate pain and fever reduction.",
+    "standard_dosage": "500mg to 1000mg every 4 to 6 hours as needed (Max 4000mg/day).",
+    "precautions": [
+      "Avoid alcohol consumption while taking this medication.",
+      "Consult doctor if liver conditions exist."
+    ],
+    "side_effects": [
+      "Nausea",
+      "Mild stomach discomfort"
+    ]
+  },
+  {
+    "medicine_id": "MED102",
+    "brand_name": "Amoxicillin",
+    "generic_name": "Amoxicillin",
+    "category": "Penicillin Antibiotic",
+    "purpose": "Treatment of bacterial infections such as pneumonia, bronchitis, and ear infections.",
+    "standard_dosage": "250mg to 500mg every 8 hours or as prescribed by a physician.",
+    "precautions": [
+      "Do not use if allergic to Penicillin or cephalosporins.",
+      "Complete the full prescribed course even if symptoms improve."
+    ],
+    "side_effects": [
+      "Diarrhea",
+      "Rash",
+      "Nausea"
+    ]
+  },
+  {
+    "medicine_id": "MED103",
+    "brand_name": "Ventolin / ProAir",
+    "generic_name": "Albuterol Inhaler",
+    "category": "Bronchodilator",
+    "purpose": "Relief of bronchospasm in respiratory conditions like Asthma and COPD.",
+    "standard_dosage": "1 to 2 inhalations every 4 to 6 hours as needed for shortness of breath.",
+    "precautions": [
+      "Use as directed. Excessive use can cause cardiovascular stimulation.",
+      "Inform doctor if shortness of breath worsens rapidly."
+    ],
+    "side_effects": [
+      "Tremor",
+      "Nervousness",
+      "Increased heart rate"
+    ]
+  }
+]

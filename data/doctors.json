@@ -1,0 +1,46 @@
+[
+  {
+    "doctor_id": "DOC001",
+    "full_name": "Dr. Sarah Jenkins",
+    "specialty": "General Medicine",
+    "qualification": "MD, MBBS",
+    "experience_years": 12,
+    "available_days": ["Monday", "Wednesday", "Friday"],
+    "available_slots": ["09:00 AM", "11:30 AM", "02:00 PM"],
+    "consultation_fee": 50.00,
+    "currency": "USD"
+  },
+  {
+    "doctor_id": "DOC002",
+    "full_name": "Dr. Rajesh Sharma",
+    "specialty": "Cardiology",
+    "qualification": "DM, MD",
+    "experience_years": 18,
+    "available_days": ["Tuesday", "Thursday"],
+    "available_slots": ["10:00 AM", "01:00 PM", "04:00 PM"],
+    "consultation_fee": 90.00,
+    "currency": "USD"
+  },
+  {
+    "doctor_id": "DOC003",
+    "full_name": "Dr. Emily Chen",
+    "specialty": "Pediatrics",
+    "qualification": "MD",
+    "experience_years": 8,
+    "available_days": ["Monday", "Tuesday", "Thursday"],
+    "available_slots": ["08:30 AM", "11:00 AM", "03:00 PM"],
+    "consultation_fee": 65.00,
+    "currency": "USD"
+  },
+  {
+    "doctor_id": "DOC004",
+    "full_name": "Dr. Michael Brown",
+    "specialty": "Pulmonology",
+    "qualification": "MD, FCCP",
+    "experience_years": 15,
+    "available_days": ["Wednesday", "Friday"],
+    "available_slots": ["10:00 AM", "02:30 PM"],
+    "consultation_fee": 85.00,
+    "currency": "USD"
+  }
+]

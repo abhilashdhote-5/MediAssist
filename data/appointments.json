@@ -1,0 +1,57 @@
+[
+  {
+    "appointment_id": "APT1001",
+    "patient_id": "PAT8801",
+    "patient_name": "Alice Smith",
+    "doctor_id": "DOC001",
+    "doctor_name": "Dr. Sarah Jenkins",
+    "appointment_date": "2026-08-10",
+    "time_slot": "09:00 AM",
+    "status": "Scheduled",
+    "reason_for_visit": "Persistent fever and headache"
+  },
+  {
+    "appointment_id": "APT1002",
+    "patient_id": "PAT8802",
+    "patient_name": "John Doe",
+    "doctor_id": "DOC002",
+    "doctor_name": "Dr. Rajesh Sharma",
+    "appointment_date": "2026-08-12",
+    "time_slot": "10:00 AM",
+    "status": "Scheduled",
+    "reason_for_visit": "Routine cardiac checkup"
+  },
+  {
+    "appointment_id": "APT1003",
+    "patient_id": "PAT8801",
+    "patient_name": "Alice Smith",
+    "doctor_id": "DOC001",
+    "doctor_name": "Dr. Sarah Jenkins",
+    "appointment_date": "2026-08-10",
+    "time_slot": "09:00 AM",
+    "status": "Scheduled",
+    "reason_for_visit": "Book an appointment for Dr. Sarah Jenkins"
+  },
+  {
+    "appointment_id": "APT1004",
+    "patient_id": "PAT8801",
+    "patient_name": "Alice Smith",
+    "doctor_id": "DOC001",
+    "doctor_name": "Dr. Sarah Jenkins",
+    "appointment_date": "2026-08-10",
+    "time_slot": "09:00 AM",
+    "status": "Scheduled",
+    "reason_for_visit": "I want to book an appointment"
+  },
+  {
+    "appointment_id": "APT1005",
+    "patient_id": "PAT8801",
+    "patient_name": "Alice Smith",
+    "doctor_id": "DOC001",
+    "doctor_name": "Dr. Sarah Jenkins",
+    "appointment_date": "2026-08-15",
+    "time_slot": "09:00 AM",
+    "status": "Scheduled",
+    "reason_for_visit": "Test visit"
+  }
+]

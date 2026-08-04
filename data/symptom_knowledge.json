@@ -1,0 +1,38 @@
+[
+  {
+    "symptom_id": "SYM001",
+    "primary_symptom": "Fever and Chill",
+    "risk_level": "Moderate",
+    "care_guidance": "Stay hydrated, rest, and monitor body temperature regularly. Use over-the-counter antipyretics if needed.",
+    "recommended_specialty": "General Medicine",
+    "red_flags": [
+      "Fever above 103°F (39.4°C)",
+      "Difficulty breathing",
+      "Stiff neck or confusion"
+    ]
+  },
+  {
+    "symptom_id": "SYM002",
+    "primary_symptom": "Chest Tightness",
+    "risk_level": "Critical",
+    "care_guidance": "Chest pain or tightness requires immediate emergency medical evaluation.",
+    "recommended_specialty": "Cardiology",
+    "red_flags": [
+      "Pain radiating to left arm or jaw",
+      "Shortness of breath",
+      "Cold sweats or dizziness"
+    ]
+  },
+  {
+    "symptom_id": "SYM003",
+    "primary_symptom": "Persistent Cough",
+    "risk_level": "Low",
+    "care_guidance": "Drink warm liquids, use honey or cough drops, and avoid irritants or smoke.",
+    "recommended_specialty": "Pulmonology",
+    "red_flags": [
+      "Coughing up blood",
+      "High fever lasting over 3 days",
+      "Shortness of breath at rest"
+    ]
+  }
+]

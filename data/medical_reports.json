@@ -1,0 +1,64 @@
+[
+  {
+    "report_id": "REP5001",
+    "patient_id": "PAT8801",
+    "doctor_id": "DOC001",
+    "report_type": "Complete Blood Count (CBC)",
+    "report_date": "2026-08-01",
+    "file_path": "data/sample_reports/cbc_report_sample.pdf",
+    "lab_results": [
+      {
+        "parameter": "Hemoglobin",
+        "value": 11.2,
+        "unit": "g/dL",
+        "reference_range": "12.0 - 15.5",
+        "status": "Low"
+      },
+      {
+        "parameter": "White Blood Cells (WBC)",
+        "value": 11500,
+        "unit": "/mcL",
+        "reference_range": "4500 - 11000",
+        "status": "High"
+      },
+      {
+        "parameter": "Platelets",
+        "value": 250000,
+        "unit": "/mcL",
+        "reference_range": "150000 - 450000",
+        "status": "Normal"
+      }
+    ]
+  },
+  {
+    "report_id": "REP5002",
+    "patient_id": "PAT8802",
+    "doctor_id": "DOC002",
+    "report_type": "Lipid Panel",
+    "report_date": "2026-08-02",
+    "file_path": "data/sample_reports/lipid_panel_sample.pdf",
+    "lab_results": [
+      {
+        "parameter": "Total Cholesterol",
+        "value": 240,
+        "unit": "mg/dL",
+        "reference_range": "< 200",
+        "status": "High"
+      },
+      {
+        "parameter": "Triglycerides",
+        "value": 180,
+        "unit": "mg/dL",
+        "reference_range": "< 150",
+        "status": "High"
+      },
+      {
+        "parameter": "HDL (Good Cholesterol)",
+        "value": 45,
+        "unit": "mg/dL",
+        "reference_range": "> 40",
+        "status": "Normal"
+      }
+    ]
+  }
+]
