@@ -1,0 +1,391 @@
+[
+    {
+        "report_id": "REP5001",
+        "patient_id": "PAT0027",
+        "doctor_id": "DOC020",
+        "report_type": "Lipid Panel",
+        "report_date": "2026-06-15",
+        "file_path": "data/sample_reports/report_5001.pdf",
+        "lab_results": [
+            {
+                "parameter": "Total Cholesterol",
+                "value": 216,
+                "unit": "mg/dL",
+                "reference_range": "< 200",
+                "status": "High"
+            }
+        ]
+    },
+    {
+        "report_id": "REP5002",
+        "patient_id": "PAT0029",
+        "doctor_id": "DOC015",
+        "report_type": "Thyroid Profile",
+        "report_date": "2026-06-09",
+        "file_path": "data/sample_reports/report_5002.pdf",
+        "lab_results": [
+            {
+                "parameter": "Total Cholesterol",
+                "value": 225,
+                "unit": "mg/dL",
+                "reference_range": "< 200",
+                "status": "High"
+            }
+        ]
+    },
+    {
+        "report_id": "REP5003",
+        "patient_id": "PAT0020",
+        "doctor_id": "DOC019",
+        "report_type": "Complete Blood Count (CBC)",
+        "report_date": "2026-06-25",
+        "file_path": "data/sample_reports/report_5003.pdf",
+        "lab_results": [
+            {
+                "parameter": "Hemoglobin",
+                "value": 15.7,
+                "unit": "g/dL",
+                "reference_range": "12.0 - 15.5",
+                "status": "Normal"
+            },
+            {
+                "parameter": "White Blood Cells (WBC)",
+                "value": 6404,
+                "unit": "/mcL",
+                "reference_range": "4500 - 11000",
+                "status": "Low"
+            }
+        ]
+    },
+    {
+        "report_id": "REP5004",
+        "patient_id": "PAT0014",
+        "doctor_id": "DOC009",
+        "report_type": "Complete Blood Count (CBC)",
+        "report_date": "2026-07-24",
+        "file_path": "data/sample_reports/report_5004.pdf",
+        "lab_results": [
+            {
+                "parameter": "Hemoglobin",
+                "value": 10.7,
+                "unit": "g/dL",
+                "reference_range": "12.0 - 15.5",
+                "status": "High"
+            },
+            {
+                "parameter": "White Blood Cells (WBC)",
+                "value": 4229,
+                "unit": "/mcL",
+                "reference_range": "4500 - 11000",
+                "status": "Normal"
+            }
+        ]
+    },
+    {
+        "report_id": "REP5005",
+        "patient_id": "PAT0001",
+        "doctor_id": "DOC014",
+        "report_type": "Metabolic Panel",
+        "report_date": "2026-06-20",
+        "file_path": "data/sample_reports/report_5005.pdf",
+        "lab_results": [
+            {
+                "parameter": "Total Cholesterol",
+                "value": 226,
+                "unit": "mg/dL",
+                "reference_range": "< 200",
+                "status": "High"
+            }
+        ]
+    },
+    {
+        "report_id": "REP5006",
+        "patient_id": "PAT0019",
+        "doctor_id": "DOC002",
+        "report_type": "Lipid Panel",
+        "report_date": "2026-07-16",
+        "file_path": "data/sample_reports/report_5006.pdf",
+        "lab_results": [
+            {
+                "parameter": "Total Cholesterol",
+                "value": 240,
+                "unit": "mg/dL",
+                "reference_range": "< 200",
+                "status": "High"
+            }
+        ]
+    },
+    {
+        "report_id": "REP5007",
+        "patient_id": "PAT0045",
+        "doctor_id": "DOC015",
+        "report_type": "Complete Blood Count (CBC)",
+        "report_date": "2026-06-21",
+        "file_path": "data/sample_reports/report_5007.pdf",
+        "lab_results": [
+            {
+                "parameter": "Hemoglobin",
+                "value": 10.6,
+                "unit": "g/dL",
+                "reference_range": "12.0 - 15.5",
+                "status": "Low"
+            },
+            {
+                "parameter": "White Blood Cells (WBC)",
+                "value": 6241,
+                "unit": "/mcL",
+                "reference_range": "4500 - 11000",
+                "status": "High"
+            }
+        ]
+    },
+    {
+        "report_id": "REP5008",
+        "patient_id": "PAT0008",
+        "doctor_id": "DOC018",
+        "report_type": "Lipid Panel",
+        "report_date": "2026-06-23",
+        "file_path": "data/sample_reports/report_5008.pdf",
+        "lab_results": [
+            {
+                "parameter": "Total Cholesterol",
+                "value": 169,
+                "unit": "mg/dL",
+                "reference_range": "< 200",
+                "status": "High"
+            }
+        ]
+    },
+    {
+        "report_id": "REP5009",
+        "patient_id": "PAT0010",
+        "doctor_id": "DOC003",
+        "report_type": "Complete Blood Count (CBC)",
+        "report_date": "2026-07-24",
+        "file_path": "data/sample_reports/report_5009.pdf",
+        "lab_results": [
+            {
+                "parameter": "Hemoglobin",
+                "value": 14.5,
+                "unit": "g/dL",
+                "reference_range": "12.0 - 15.5",
+                "status": "High"
+            },
+            {
+                "parameter": "White Blood Cells (WBC)",
+                "value": 7728,
+                "unit": "/mcL",
+                "reference_range": "4500 - 11000",
+                "status": "High"
+            }
+        ]
+    },
+    {
+        "report_id": "REP5010",
+        "patient_id": "PAT0008",
+        "doctor_id": "DOC015",
+        "report_type": "Thyroid Profile",
+        "report_date": "2026-06-20",
+        "file_path": "data/sample_reports/report_5010.pdf",
+        "lab_results": [
+            {
+                "parameter": "Total Cholesterol",
+                "value": 201,
+                "unit": "mg/dL",
+                "reference_range": "< 200",
+                "status": "High"
+            }
+        ]
+    },
+    {
+        "report_id": "REP5011",
+        "patient_id": "PAT0033",
+        "doctor_id": "DOC018",
+        "report_type": "Metabolic Panel",
+        "report_date": "2026-07-06",
+        "file_path": "data/sample_reports/report_5011.pdf",
+        "lab_results": [
+            {
+                "parameter": "Total Cholesterol",
+                "value": 160,
+                "unit": "mg/dL",
+                "reference_range": "< 200",
+                "status": "Normal"
+            }
+        ]
+    },
+    {
+        "report_id": "REP5012",
+        "patient_id": "PAT0028",
+        "doctor_id": "DOC011",
+        "report_type": "Thyroid Profile",
+        "report_date": "2026-08-02",
+        "file_path": "data/sample_reports/report_5012.pdf",
+        "lab_results": [
+            {
+                "parameter": "Total Cholesterol",
+                "value": 161,
+                "unit": "mg/dL",
+                "reference_range": "< 200",
+                "status": "Normal"
+            }
+        ]
+    },
+    {
+        "report_id": "REP5013",
+        "patient_id": "PAT0044",
+        "doctor_id": "DOC019",
+        "report_type": "Complete Blood Count (CBC)",
+        "report_date": "2026-06-16",
+        "file_path": "data/sample_reports/report_5013.pdf",
+        "lab_results": [
+            {
+                "parameter": "Hemoglobin",
+                "value": 13.7,
+                "unit": "g/dL",
+                "reference_range": "12.0 - 15.5",
+                "status": "Low"
+            },
+            {
+                "parameter": "White Blood Cells (WBC)",
+                "value": 3659,
+                "unit": "/mcL",
+                "reference_range": "4500 - 11000",
+                "status": "Normal"
+            }
+        ]
+    },
+    {
+        "report_id": "REP5014",
+        "patient_id": "PAT0031",
+        "doctor_id": "DOC017",
+        "report_type": "Metabolic Panel",
+        "report_date": "2026-06-06",
+        "file_path": "data/sample_reports/report_5014.pdf",
+        "lab_results": [
+            {
+                "parameter": "Total Cholesterol",
+                "value": 185,
+                "unit": "mg/dL",
+                "reference_range": "< 200",
+                "status": "Normal"
+            }
+        ]
+    },
+    {
+        "report_id": "REP5015",
+        "patient_id": "PAT0038",
+        "doctor_id": "DOC014",
+        "report_type": "Metabolic Panel",
+        "report_date": "2026-07-29",
+        "file_path": "data/sample_reports/report_5015.pdf",
+        "lab_results": [
+            {
+                "parameter": "Total Cholesterol",
+                "value": 210,
+                "unit": "mg/dL",
+                "reference_range": "< 200",
+                "status": "High"
+            }
+        ]
+    },
+    {
+        "report_id": "REP5016",
+        "patient_id": "PAT0027",
+        "doctor_id": "DOC011",
+        "report_type": "Thyroid Profile",
+        "report_date": "2026-06-22",
+        "file_path": "data/sample_reports/report_5016.pdf",
+        "lab_results": [
+            {
+                "parameter": "Total Cholesterol",
+                "value": 163,
+                "unit": "mg/dL",
+                "reference_range": "< 200",
+                "status": "Normal"
+            }
+        ]
+    },
+    {
+        "report_id": "REP5017",
+        "patient_id": "PAT0022",
+        "doctor_id": "DOC014",
+        "report_type": "Metabolic Panel",
+        "report_date": "2026-07-16",
+        "file_path": "data/sample_reports/report_5017.pdf",
+        "lab_results": [
+            {
+                "parameter": "Total Cholesterol",
+                "value": 234,
+                "unit": "mg/dL",
+                "reference_range": "< 200",
+                "status": "High"
+            }
+        ]
+    },
+    {
+        "report_id": "REP5018",
+        "patient_id": "PAT0049",
+        "doctor_id": "DOC018",
+        "report_type": "Complete Blood Count (CBC)",
+        "report_date": "2026-07-05",
+        "file_path": "data/sample_reports/report_5018.pdf",
+        "lab_results": [
+            {
+                "parameter": "Hemoglobin",
+                "value": 9.6,
+                "unit": "g/dL",
+                "reference_range": "12.0 - 15.5",
+                "status": "Low"
+            },
+            {
+                "parameter": "White Blood Cells (WBC)",
+                "value": 8296,
+                "unit": "/mcL",
+                "reference_range": "4500 - 11000",
+                "status": "Normal"
+            }
+        ]
+    },
+    {
+        "report_id": "REP5019",
+        "patient_id": "PAT0050",
+        "doctor_id": "DOC013",
+        "report_type": "Complete Blood Count (CBC)",
+        "report_date": "2026-06-22",
+        "file_path": "data/sample_reports/report_5019.pdf",
+        "lab_results": [
+            {
+                "parameter": "Hemoglobin",
+                "value": 15.1,
+                "unit": "g/dL",
+                "reference_range": "12.0 - 15.5",
+                "status": "Low"
+            },
+            {
+                "parameter": "White Blood Cells (WBC)",
+                "value": 9770,
+                "unit": "/mcL",
+                "reference_range": "4500 - 11000",
+                "status": "Normal"
+            }
+        ]
+    },
+    {
+        "report_id": "REP5020",
+        "patient_id": "PAT0013",
+        "doctor_id": "DOC017",
+        "report_type": "Thyroid Profile",
+        "report_date": "2026-06-25",
+        "file_path": "data/sample_reports/report_5020.pdf",
+        "lab_results": [
+            {
+                "parameter": "Total Cholesterol",
+                "value": 246,
+                "unit": "mg/dL",
+                "reference_range": "< 200",
+                "status": "High"
+            }
+        ]
+    }
+]

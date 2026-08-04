@@ -1,0 +1,256 @@
+[
+    {
+        "medicine_id": "MED101",
+        "brand_name": "Paracetamol / Tylenol",
+        "generic_name": "Acetaminophen",
+        "category": "Analgesic / Antipyretic",
+        "purpose": "Relief of mild to moderate pain and fever reduction.",
+        "standard_dosage": "500mg to 1000mg every 4 to 6 hours as needed (Max 4000mg/day).",
+        "precautions": [
+            "Avoid alcohol consumption while taking this medication.",
+            "Consult doctor if liver conditions exist."
+        ],
+        "side_effects": [
+            "Nausea",
+            "Mild stomach discomfort"
+        ]
+    },
+    {
+        "medicine_id": "MED102",
+        "brand_name": "Advil / Motrin",
+        "generic_name": "Ibuprofen",
+        "category": "Nonsteroidal Anti-inflammatory Drug (NSAID)",
+        "purpose": "Reduces inflammation, pain, and fever.",
+        "standard_dosage": "200mg to 400mg every 4 to 6 hours.",
+        "precautions": [
+            "Take with food or milk to prevent stomach upset.",
+            "Avoid if you have a history of stomach ulcers."
+        ],
+        "side_effects": [
+            "Heartburn",
+            "Dizziness",
+            "Mild rash"
+        ]
+    },
+    {
+        "medicine_id": "MED103",
+        "brand_name": "Amoxil",
+        "generic_name": "Amoxicillin",
+        "category": "Antibiotic",
+        "purpose": "Treatment of bacterial infections.",
+        "standard_dosage": "250mg to 500mg every 8 hours for 7-10 days.",
+        "precautions": [
+            "Do not take if allergic to Penicillin.",
+            "Complete the entire prescribed course even if you feel better."
+        ],
+        "side_effects": [
+            "Diarrhea",
+            "Upset stomach",
+            "Skin rash"
+        ]
+    },
+    {
+        "medicine_id": "MED104",
+        "brand_name": "Zyrtec",
+        "generic_name": "Cetirizine",
+        "category": "Antihistamine",
+        "purpose": "Relief of allergy symptoms like watery eyes, runny nose, and sneezing.",
+        "standard_dosage": "10mg once daily.",
+        "precautions": [
+            "May cause drowsiness; use caution when driving.",
+            "Avoid concurrent use with sedatives."
+        ],
+        "side_effects": [
+            "Drowsiness",
+            "Dry mouth",
+            "Fatigue"
+        ]
+    },
+    {
+        "medicine_id": "MED105",
+        "brand_name": "Prilosec",
+        "generic_name": "Omeprazole",
+        "category": "Proton Pump Inhibitor (PPI)",
+        "purpose": "Treats gastroesophageal reflux disease (GERD) and stomach ulcers.",
+        "standard_dosage": "20mg once daily before a meal.",
+        "precautions": [
+            "Do not crush or chew capsules.",
+            "Consult a doctor if symptoms persist for more than 14 days."
+        ],
+        "side_effects": [
+            "Headache",
+            "Abdominal pain",
+            "Flatulence"
+        ]
+    },
+    {
+        "medicine_id": "MED106",
+        "brand_name": "Glucophage",
+        "generic_name": "Metformin",
+        "category": "Antidiabetic",
+        "purpose": "Improves blood sugar control in adults with type 2 diabetes.",
+        "standard_dosage": "500mg twice daily with meals.",
+        "precautions": [
+            "Monitor kidney function regularly.",
+            "Risk of lactic acidosis if heavily consuming alcohol."
+        ],
+        "side_effects": [
+            "Nausea",
+            "Diarrhea",
+            "Metallic taste in mouth"
+        ]
+    },
+    {
+        "medicine_id": "MED107",
+        "brand_name": "Norvasc",
+        "generic_name": "Amlodipine",
+        "category": "Calcium Channel Blocker",
+        "purpose": "Treats high blood pressure and chest pain (angina).",
+        "standard_dosage": "5mg once daily.",
+        "precautions": [
+            "Do not stop taking suddenly without doctor consultation.",
+            "May cause lightheadedness when standing up quickly."
+        ],
+        "side_effects": [
+            "Swelling of ankles or feet",
+            "Flushing",
+            "Dizziness"
+        ]
+    },
+    {
+        "medicine_id": "MED108",
+        "brand_name": "Ventolin HFA",
+        "generic_name": "Albuterol / Salbutamol",
+        "category": "Bronchodilator",
+        "purpose": "Prevents and treats wheezing and shortness of breath caused by asthma.",
+        "standard_dosage": "1 to 2 inhalations every 4 to 6 hours as needed.",
+        "precautions": [
+            "Keep the inhaler clean and dry.",
+            "Excessive use may lead to adverse heart effects."
+        ],
+        "side_effects": [
+            "Tremors",
+            "Rapid heart rate",
+            "Nervousness"
+        ]
+    },
+    {
+        "medicine_id": "MED109",
+        "brand_name": "Zithromax",
+        "generic_name": "Azithromycin",
+        "category": "Macrolide Antibiotic",
+        "purpose": "Treats various bacterial infections, including respiratory and skin infections.",
+        "standard_dosage": "500mg on day 1, then 250mg for 4 more days.",
+        "precautions": [
+            "Do not take with antacids containing aluminum or magnesium.",
+            "Watch for signs of irregular heart rhythm."
+        ],
+        "side_effects": [
+            "Stomach pain",
+            "Vomiting",
+            "Loose stools"
+        ]
+    },
+    {
+        "medicine_id": "MED110",
+        "brand_name": "Claritin",
+        "generic_name": "Loratadine",
+        "category": "Antihistamine",
+        "purpose": "Relieves allergy symptoms and hives without significant drowsiness.",
+        "standard_dosage": "10mg once daily.",
+        "precautions": [
+            "Safe for adults and children over 6 years old (in pill form).",
+            "Consult a doctor if you have liver or kidney disease."
+        ],
+        "side_effects": [
+            "Mild headache",
+            "Dry mouth",
+            "Nervousness"
+        ]
+    },
+    {
+        "medicine_id": "MED111",
+        "brand_name": "Synthroid",
+        "generic_name": "Levothyroxine",
+        "category": "Thyroid Hormone",
+        "purpose": "Treats hypothyroidism (underactive thyroid).",
+        "standard_dosage": "25mcg to 50mcg once daily, taken on an empty stomach.",
+        "precautions": [
+            "Take 30-60 minutes before breakfast.",
+            "Do not take with iron or calcium supplements."
+        ],
+        "side_effects": [
+            "Changes in appetite",
+            "Weight changes",
+            "Sensitivity to heat"
+        ]
+    },
+    {
+        "medicine_id": "MED112",
+        "brand_name": "Lipitor",
+        "generic_name": "Atorvastatin",
+        "category": "Statin (Cholesterol-lowering)",
+        "purpose": "Lowers high cholesterol and triglyceride levels in the blood.",
+        "standard_dosage": "10mg to 20mg once daily.",
+        "precautions": [
+            "Avoid drinking grapefruit juice while taking this medication.",
+            "Notify your doctor immediately if you experience unexplained muscle pain."
+        ],
+        "side_effects": [
+            "Mild muscle or joint pain",
+            "Diarrhea",
+            "Mild nausea"
+        ]
+    },
+    {
+        "medicine_id": "MED113",
+        "brand_name": "Pepto-Bismol",
+        "generic_name": "Bismuth subsalicylate",
+        "category": "Antacid / Antidiarrheal",
+        "purpose": "Relief of heartburn, indigestion, upset stomach, and diarrhea.",
+        "standard_dosage": "30mL (2 tablespoons) every 30-60 minutes as needed (Max 240mL/day).",
+        "precautions": [
+            "Do not give to children or teenagers recovering from viral infections due to Reye's syndrome risk.",
+            "May cause stools to temporarily turn dark or black."
+        ],
+        "side_effects": [
+            "Darkened tongue",
+            "Dark stools",
+            "Constipation"
+        ]
+    },
+    {
+        "medicine_id": "MED114",
+        "brand_name": "Flonase",
+        "generic_name": "Fluticasone Propionate",
+        "category": "Corticosteroid Nasal Spray",
+        "purpose": "Relieves seasonal and year-round allergy symptoms like congestion and sneezing.",
+        "standard_dosage": "2 sprays in each nostril once daily.",
+        "precautions": [
+            "Shake gently before each use.",
+            "It may take several days of regular use to feel the full effect."
+        ],
+        "side_effects": [
+            "Minor nosebleeds",
+            "Nasal irritation",
+            "Headache"
+        ]
+    },
+    {
+        "medicine_id": "MED115",
+        "brand_name": "Tums",
+        "generic_name": "Calcium Carbonate",
+        "category": "Antacid",
+        "purpose": "Quick relief of acid indigestion and heartburn.",
+        "standard_dosage": "Chew 2 to 4 tablets as symptoms occur.",
+        "precautions": [
+            "Do not take the maximum dosage for more than 2 weeks.",
+            "Can interact with certain prescription medications; separate doses by 2 hours."
+        ],
+        "side_effects": [
+            "Constipation",
+            "Gas",
+            "Burping"
+        ]
+    }
+]

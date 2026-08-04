@@ -1,0 +1,411 @@
+[
+    {
+        "doctor_id": "DOC001",
+        "full_name": "Dr. Danielle Johnson",
+        "specialty": "Dermatology",
+        "qualification": "MD, MBBS",
+        "experience_years": 3,
+        "available_days": [
+            "Wednesday",
+            "Tuesday",
+            "Monday",
+            "Friday"
+        ],
+        "available_slots": [
+            "09:00 AM",
+            "02:00 PM",
+            "04:00 PM",
+            "11:30 AM",
+            "10:00 AM"
+        ],
+        "consultation_fee": 54.77,
+        "currency": "USD"
+    },
+    {
+        "doctor_id": "DOC002",
+        "full_name": "Dr. Joshua Walker",
+        "specialty": "General Medicine",
+        "qualification": "DM, MD",
+        "experience_years": 10,
+        "available_days": [
+            "Friday",
+            "Monday",
+            "Wednesday",
+            "Thursday"
+        ],
+        "available_slots": [
+            "04:00 PM",
+            "02:00 PM",
+            "01:00 PM",
+            "09:00 AM",
+            "10:00 AM"
+        ],
+        "consultation_fee": 138.39,
+        "currency": "USD"
+    },
+    {
+        "doctor_id": "DOC003",
+        "full_name": "Dr. Jill Rhodes",
+        "specialty": "Endocrinology",
+        "qualification": "MD, MBBS",
+        "experience_years": 27,
+        "available_days": [
+            "Thursday",
+            "Wednesday"
+        ],
+        "available_slots": [
+            "10:00 AM",
+            "04:00 PM",
+            "11:30 AM",
+            "09:00 AM"
+        ],
+        "consultation_fee": 63.91,
+        "currency": "USD"
+    },
+    {
+        "doctor_id": "DOC004",
+        "full_name": "Dr. Patricia Miller",
+        "specialty": "General Medicine",
+        "qualification": "MS, MBBS",
+        "experience_years": 30,
+        "available_days": [
+            "Friday",
+            "Wednesday",
+            "Monday"
+        ],
+        "available_slots": [
+            "01:00 PM",
+            "02:00 PM",
+            "09:00 AM",
+            "10:00 AM",
+            "04:00 PM"
+        ],
+        "consultation_fee": 132.81,
+        "currency": "USD"
+    },
+    {
+        "doctor_id": "DOC005",
+        "full_name": "Dr. Robert Johnson",
+        "specialty": "Endocrinology",
+        "qualification": "MS, MBBS",
+        "experience_years": 21,
+        "available_days": [
+            "Monday",
+            "Friday"
+        ],
+        "available_slots": [
+            "10:00 AM",
+            "11:30 AM",
+            "09:00 AM",
+            "01:00 PM",
+            "02:00 PM"
+        ],
+        "consultation_fee": 107.02,
+        "currency": "USD"
+    },
+    {
+        "doctor_id": "DOC006",
+        "full_name": "Dr. Jeffery Wagner",
+        "specialty": "Orthopedics",
+        "qualification": "MS, MBBS",
+        "experience_years": 8,
+        "available_days": [
+            "Wednesday",
+            "Tuesday",
+            "Friday"
+        ],
+        "available_slots": [
+            "04:00 PM",
+            "09:00 AM",
+            "10:00 AM",
+            "11:30 AM"
+        ],
+        "consultation_fee": 159.37,
+        "currency": "USD"
+    },
+    {
+        "doctor_id": "DOC007",
+        "full_name": "Dr. Anthony Gonzalez",
+        "specialty": "Cardiology",
+        "qualification": "DO",
+        "experience_years": 15,
+        "available_days": [
+            "Friday",
+            "Tuesday",
+            "Wednesday"
+        ],
+        "available_slots": [
+            "09:00 AM",
+            "10:00 AM",
+            "04:00 PM",
+            "02:00 PM"
+        ],
+        "consultation_fee": 110.17,
+        "currency": "USD"
+    },
+    {
+        "doctor_id": "DOC008",
+        "full_name": "Dr. Debra Gardner",
+        "specialty": "General Medicine",
+        "qualification": "DM, MD",
+        "experience_years": 21,
+        "available_days": [
+            "Wednesday",
+            "Tuesday",
+            "Friday",
+            "Thursday"
+        ],
+        "available_slots": [
+            "04:00 PM",
+            "01:00 PM",
+            "10:00 AM",
+            "02:00 PM"
+        ],
+        "consultation_fee": 70.94,
+        "currency": "USD"
+    },
+    {
+        "doctor_id": "DOC009",
+        "full_name": "Dr. Jeffrey Lawrence",
+        "specialty": "Dermatology",
+        "qualification": "MS, MBBS",
+        "experience_years": 26,
+        "available_days": [
+            "Thursday",
+            "Friday",
+            "Tuesday",
+            "Monday"
+        ],
+        "available_slots": [
+            "02:00 PM",
+            "01:00 PM",
+            "09:00 AM"
+        ],
+        "consultation_fee": 163.37,
+        "currency": "USD"
+    },
+    {
+        "doctor_id": "DOC010",
+        "full_name": "Dr. Lisa Smith",
+        "specialty": "Endocrinology",
+        "qualification": "MD, MBBS",
+        "experience_years": 7,
+        "available_days": [
+            "Tuesday",
+            "Thursday",
+            "Wednesday",
+            "Monday"
+        ],
+        "available_slots": [
+            "01:00 PM",
+            "02:00 PM",
+            "04:00 PM",
+            "11:30 AM"
+        ],
+        "consultation_fee": 87.71,
+        "currency": "USD"
+    },
+    {
+        "doctor_id": "DOC011",
+        "full_name": "Dr. Linda Wolfe",
+        "specialty": "Pediatrics",
+        "qualification": "MD, MBBS",
+        "experience_years": 24,
+        "available_days": [
+            "Monday",
+            "Wednesday",
+            "Thursday",
+            "Tuesday"
+        ],
+        "available_slots": [
+            "11:30 AM",
+            "01:00 PM",
+            "10:00 AM"
+        ],
+        "consultation_fee": 118.06,
+        "currency": "USD"
+    },
+    {
+        "doctor_id": "DOC012",
+        "full_name": "Dr. Matthew Moore",
+        "specialty": "Dermatology",
+        "qualification": "MS, MBBS",
+        "experience_years": 19,
+        "available_days": [
+            "Friday",
+            "Monday"
+        ],
+        "available_slots": [
+            "11:30 AM",
+            "02:00 PM",
+            "10:00 AM",
+            "09:00 AM",
+            "01:00 PM"
+        ],
+        "consultation_fee": 164.38,
+        "currency": "USD"
+    },
+    {
+        "doctor_id": "DOC013",
+        "full_name": "Dr. Susan Rogers",
+        "specialty": "Pediatrics",
+        "qualification": "MD, MBBS",
+        "experience_years": 22,
+        "available_days": [
+            "Thursday",
+            "Monday",
+            "Friday"
+        ],
+        "available_slots": [
+            "11:30 AM",
+            "10:00 AM",
+            "09:00 AM",
+            "01:00 PM"
+        ],
+        "consultation_fee": 181.7,
+        "currency": "USD"
+    },
+    {
+        "doctor_id": "DOC014",
+        "full_name": "Dr. Christopher Davis",
+        "specialty": "General Medicine",
+        "qualification": "MD, MBBS",
+        "experience_years": 26,
+        "available_days": [
+            "Monday",
+            "Tuesday",
+            "Friday"
+        ],
+        "available_slots": [
+            "01:00 PM",
+            "02:00 PM",
+            "10:00 AM",
+            "04:00 PM",
+            "11:30 AM"
+        ],
+        "consultation_fee": 194.65,
+        "currency": "USD"
+    },
+    {
+        "doctor_id": "DOC015",
+        "full_name": "Dr. Melanie Munoz",
+        "specialty": "Pediatrics",
+        "qualification": "DM, MD",
+        "experience_years": 25,
+        "available_days": [
+            "Thursday",
+            "Wednesday",
+            "Tuesday"
+        ],
+        "available_slots": [
+            "01:00 PM",
+            "09:00 AM",
+            "10:00 AM",
+            "02:00 PM",
+            "11:30 AM"
+        ],
+        "consultation_fee": 100.71,
+        "currency": "USD"
+    },
+    {
+        "doctor_id": "DOC016",
+        "full_name": "Dr. Lindsay Blair",
+        "specialty": "Pediatrics",
+        "qualification": "DM, MD",
+        "experience_years": 21,
+        "available_days": [
+            "Monday",
+            "Friday"
+        ],
+        "available_slots": [
+            "04:00 PM",
+            "09:00 AM",
+            "10:00 AM",
+            "02:00 PM",
+            "11:30 AM"
+        ],
+        "consultation_fee": 178.95,
+        "currency": "USD"
+    },
+    {
+        "doctor_id": "DOC017",
+        "full_name": "Dr. Amanda Dudley",
+        "specialty": "General Medicine",
+        "qualification": "DM, MD",
+        "experience_years": 11,
+        "available_days": [
+            "Thursday",
+            "Tuesday",
+            "Wednesday",
+            "Monday"
+        ],
+        "available_slots": [
+            "02:00 PM",
+            "04:00 PM",
+            "01:00 PM",
+            "09:00 AM",
+            "10:00 AM"
+        ],
+        "consultation_fee": 171.12,
+        "currency": "USD"
+    },
+    {
+        "doctor_id": "DOC018",
+        "full_name": "Dr. Nicholas Arnold",
+        "specialty": "Cardiology",
+        "qualification": "MD, MBBS",
+        "experience_years": 6,
+        "available_days": [
+            "Thursday",
+            "Wednesday",
+            "Tuesday",
+            "Friday"
+        ],
+        "available_slots": [
+            "04:00 PM",
+            "09:00 AM",
+            "02:00 PM",
+            "01:00 PM"
+        ],
+        "consultation_fee": 110.39,
+        "currency": "USD"
+    },
+    {
+        "doctor_id": "DOC019",
+        "full_name": "Dr. Maria Montgomery",
+        "specialty": "Neurology",
+        "qualification": "MD, MBBS",
+        "experience_years": 10,
+        "available_days": [
+            "Tuesday",
+            "Thursday"
+        ],
+        "available_slots": [
+            "01:00 PM",
+            "10:00 AM",
+            "11:30 AM"
+        ],
+        "consultation_fee": 119.39,
+        "currency": "USD"
+    },
+    {
+        "doctor_id": "DOC020",
+        "full_name": "Dr. Michelle Ray",
+        "specialty": "Endocrinology",
+        "qualification": "MD, MBBS",
+        "experience_years": 17,
+        "available_days": [
+            "Monday",
+            "Friday",
+            "Wednesday",
+            "Thursday"
+        ],
+        "available_slots": [
+            "10:00 AM",
+            "04:00 PM",
+            "01:00 PM"
+        ],
+        "consultation_fee": 122.85,
+        "currency": "USD"
+    }
+]

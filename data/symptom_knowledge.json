@@ -1,0 +1,182 @@
+[
+    {
+        "symptom_id": "SYM001",
+        "primary_symptom": "Fever",
+        "risk_level": "Moderate",
+        "care_guidance": "Stay hydrated, rest, and monitor body temperature regularly.",
+        "recommended_specialty": "General Medicine",
+        "red_flags": [
+            "Fever above 103°F (39.4°C)",
+            "Difficulty breathing",
+            "Stiff neck or confusion"
+        ]
+    },
+    {
+        "symptom_id": "SYM002",
+        "primary_symptom": "Headache",
+        "risk_level": "Low",
+        "care_guidance": "Rest in a quiet, dark room, ensure adequate hydration, and manage stress.",
+        "recommended_specialty": "Neurology",
+        "red_flags": [
+            "Sudden, severe 'thunderclap' headache",
+            "Vision changes",
+            "Weakness on one side of the body"
+        ]
+    },
+    {
+        "symptom_id": "SYM003",
+        "primary_symptom": "Chest Pain",
+        "risk_level": "Critical",
+        "care_guidance": "Stop any physical activity. Sit down and rest immediately.",
+        "recommended_specialty": "Cardiology",
+        "red_flags": [
+            "Pain radiating to jaw, neck, or left arm",
+            "Shortness of breath",
+            "Sweating, nausea, and dizziness"
+        ]
+    },
+    {
+        "symptom_id": "SYM004",
+        "primary_symptom": "Joint Pain",
+        "risk_level": "Moderate",
+        "care_guidance": "Apply ice to the affected joint, rest the area, and keep it elevated if swollen.",
+        "recommended_specialty": "Orthopedics",
+        "red_flags": [
+            "Inability to bear weight on the joint",
+            "Sudden severe swelling",
+            "Joint appears deformed"
+        ]
+    },
+    {
+        "symptom_id": "SYM005",
+        "primary_symptom": "Skin Rash",
+        "risk_level": "Low",
+        "care_guidance": "Avoid scratching, wear loose clothing, and apply a cool compress to soothe itching.",
+        "recommended_specialty": "Dermatology",
+        "red_flags": [
+            "Rash spreading rapidly",
+            "Accompanied by high fever",
+            "Blistering or peeling skin"
+        ]
+    },
+    {
+        "symptom_id": "SYM006",
+        "primary_symptom": "Persistent Cough",
+        "risk_level": "Moderate",
+        "care_guidance": "Drink warm fluids, use a humidifier, and rest your voice.",
+        "recommended_specialty": "General Medicine",
+        "red_flags": [
+            "Coughing up blood",
+            "Difficulty breathing or wheezing",
+            "Cough lasting longer than 3 weeks"
+        ]
+    },
+    {
+        "symptom_id": "SYM007",
+        "primary_symptom": "Dizziness",
+        "risk_level": "Moderate",
+        "care_guidance": "Sit or lie down immediately. Drink water slowly and avoid sudden head movements.",
+        "recommended_specialty": "Neurology",
+        "red_flags": [
+            "Fainting or loss of consciousness",
+            "Slurred speech",
+            "Inability to walk or keep balance"
+        ]
+    },
+    {
+        "symptom_id": "SYM008",
+        "primary_symptom": "Excessive Thirst",
+        "risk_level": "Moderate",
+        "care_guidance": "Increase water intake gradually and avoid sugary or caffeinated beverages.",
+        "recommended_specialty": "Endocrinology",
+        "red_flags": [
+            "Accompanied by frequent urination",
+            "Unexplained weight loss",
+            "Extreme fatigue or blurred vision"
+        ]
+    },
+    {
+        "symptom_id": "SYM009",
+        "primary_symptom": "Lower Back Pain",
+        "risk_level": "Low",
+        "care_guidance": "Avoid heavy lifting, apply heat or ice packs, and maintain gentle mobility.",
+        "recommended_specialty": "Orthopedics",
+        "red_flags": [
+            "Loss of bowel or bladder control",
+            "Numbness or tingling in the legs",
+            "Pain following a severe fall or trauma"
+        ]
+    },
+    {
+        "symptom_id": "SYM010",
+        "primary_symptom": "Shortness of Breath",
+        "risk_level": "Critical",
+        "care_guidance": "Sit upright, try to remain calm, and take slow, deep breaths.",
+        "recommended_specialty": "Cardiology",
+        "red_flags": [
+            "Gasping for air or unable to speak in full sentences",
+            "Lips or fingertips turning blue",
+            "Associated with severe chest pain"
+        ]
+    },
+    {
+        "symptom_id": "SYM011",
+        "primary_symptom": "Stomach Ache",
+        "risk_level": "Moderate",
+        "care_guidance": "Eat bland foods, stay hydrated with clear liquids, and rest.",
+        "recommended_specialty": "General Medicine",
+        "red_flags": [
+            "Severe, localized pain in the lower right abdomen",
+            "Vomiting blood or dark material",
+            "Inability to keep liquids down for 24 hours"
+        ]
+    },
+    {
+        "symptom_id": "SYM012",
+        "primary_symptom": "Sore Throat",
+        "risk_level": "Low",
+        "care_guidance": "Gargle with warm salt water, drink warm soothing liquids, and use throat lozenges.",
+        "recommended_specialty": "General Medicine",
+        "red_flags": [
+            "Difficulty swallowing or breathing",
+            "Fever higher than 101°F (38.3°C)",
+            "White patches visible at the back of the throat"
+        ]
+    },
+    {
+        "symptom_id": "SYM013",
+        "primary_symptom": "Eye Redness",
+        "risk_level": "Low",
+        "care_guidance": "Avoid rubbing the eye, remove contact lenses, and apply a cool, damp compress.",
+        "recommended_specialty": "General Medicine",
+        "red_flags": [
+            "Severe eye pain",
+            "Extreme sensitivity to light",
+            "Sudden changes in vision or blurred vision"
+        ]
+    },
+    {
+        "symptom_id": "SYM014",
+        "primary_symptom": "Earache",
+        "risk_level": "Moderate",
+        "care_guidance": "Apply a warm compress to the affected ear and avoid getting water inside.",
+        "recommended_specialty": "Pediatrics",
+        "red_flags": [
+            "Fluid, pus, or blood draining from the ear",
+            "High fever accompanying the pain",
+            "Swelling behind the ear"
+        ]
+    },
+    {
+        "symptom_id": "SYM015",
+        "primary_symptom": "Fatigue",
+        "risk_level": "Moderate",
+        "care_guidance": "Ensure you are getting 7-9 hours of sleep, stay hydrated, and maintain a balanced diet.",
+        "recommended_specialty": "General Medicine",
+        "red_flags": [
+            "Unexplained weight loss",
+            "Accompanied by thoughts of self-harm",
+            "Severe fatigue that prevents basic daily activities"
+        ]
+    }
+]
