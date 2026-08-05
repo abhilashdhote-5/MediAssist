@@ -1,4 +1,5 @@
 import re
+from datetime import datetime
 import streamlit as st
 from langchain_core.messages import HumanMessage, AIMessage
 from graph import build_mediassist_graph
@@ -180,19 +181,31 @@ st.markdown("""
     }
 
     /* ══════════════════════════════════════
-       MAIN AREA
+       MAIN AREA & STATIC HEADER
     ══════════════════════════════════════ */
     .main-wrapper {
         max-width: 860px;
         margin: 0 auto;
-        padding: 30px 24px 0 24px;
+        padding: 0 24px;
+    }
+
+    /* Sticky Static Header Container */
+    .sticky-header-container {
+        position: sticky;
+        top: 0;
+        z-index: 999;
+        background: var(--bg);
+        padding-top: 20px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 20px;
     }
 
     .chat-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 4px;
+        margin-bottom: 10px;
     }
     .chat-badge {
         display: inline-flex;
@@ -250,7 +263,6 @@ st.markdown("""
     /* ── Quick action cards ── */
     .qa-label { font-size: 0.68rem; font-weight: 700; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.08em; margin: 4px 0 10px 2px; }
     .cap-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 8px; }
-    div[data-testid="stVerticalBlockBorderWrapper"]:has(button.qa-btn-marker) {}
 
     .stButton.qa-button > button {
         background: var(--surface-2) !important;
@@ -278,7 +290,7 @@ st.markdown("""
     /* ══════════════════════════════════════
        STATUS CHIPS
     ══════════════════════════════════════ */
-    .status-bar { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
+    .status-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 0; }
     .status-chip {
         display: inline-flex; align-items: center; gap: 6px;
         background: var(--surface-2); border: 1px solid var(--border);
@@ -365,10 +377,6 @@ st.markdown("""
         padding: 8px 24px 18px 24px !important;
     }
 
-    /* Merged bar wrapper */
-    .input-merge-row { display: flex; align-items: stretch; gap: 0; }
-
-    /* attach (pin) button column — no right radius, sits flush against input */
     div[data-testid="stPopover"] {
         height: 100%;
     }
@@ -391,7 +399,6 @@ st.markdown("""
         border-color: var(--accent) !important;
     }
 
-    /* chat input — full pill, docked to bottom */
     html body [data-testid="stChatInput"] {
         background: var(--surface-2) !important;
         border: 1px solid var(--border-md) !important;
@@ -424,9 +431,6 @@ st.markdown("""
     }
     html body [data-testid="stChatInput"] button:hover { transform: scale(1.06) !important; }
     html body [data-testid="stChatInput"] button svg { fill: #FFFFFF !important; }
-
-    /* popover panel content */
-    div[data-baseweb="popover"] { }
 
     /* ══════════════════════════════════════
        HITL FORM & MISC WIDGETS
@@ -466,11 +470,10 @@ st.markdown("""
         background: var(--surface-2) !important; border: 1px solid var(--border-md) !important;
         border-radius: 10px !important; color: var(--text-1) !important; font-size: 0.82rem !important;
     }
-    .stTextInput > div > div > input {
+    .stDateInput > div > div > input {
         background: var(--surface-2) !important; border: 1px solid var(--border-md) !important;
         border-radius: 10px !important; color: var(--text-1) !important; font-size: 0.82rem !important;
     }
-    .stTextInput > div > div > input:focus { border-color: var(--accent) !important; box-shadow: 0 0 0 2px var(--accent-glow) !important; }
 
     [data-testid="stAlert"] { background: var(--surface-2) !important; border: 1px solid var(--border) !important; border-radius: 12px !important; color: var(--text-2) !important; font-size: 0.82rem !important; }
 
@@ -601,9 +604,24 @@ chat_is_empty = len(curr_session["chat_history"]) == 0
 
 st.markdown('<div class="main-wrapper">', unsafe_allow_html=True)
 
-st.markdown("""
-<div class="chat-header">
-    <div class="chat-badge"><div class="chat-badge-dot"></div>AI Specialist Chat</div>
+# ─── FIXED STATIC HEADER (Pinned top banner) ───────────────────────────────────
+st.markdown(f"""
+<div class="sticky-header-container">
+    <div class="chat-header">
+        <div class="chat-badge"><div class="chat-badge-dot"></div>AI SPECIALIST CHAT</div>
+    </div>
+    <div class="status-bar">
+        <div class="status-chip">
+            <div class="chip-dot"></div>
+            <span class="chip-label">PATIENT</span>
+            <span class="chip-value">{patient_name}</span>
+        </div>
+        <div class="status-chip">
+            <div class="chip-dot" style="background:var(--accent); box-shadow:0 0 5px var(--accent-glow);"></div>
+            <span class="chip-label">ACTIVE AGENT</span>
+            <span class="chip-value">{active_agent}</span>
+        </div>
+    </div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -647,23 +665,8 @@ if chat_is_empty:
     </svg>
     """, unsafe_allow_html=True)
 
-st.markdown(f"""
-<div class="status-bar">
-    <div class="status-chip">
-        <div class="chip-dot"></div>
-        <span class="chip-label">Patient</span>
-        <span class="chip-value">{patient_name}</span>
-    </div>
-    <div class="status-chip">
-        <div class="chip-dot" style="background:var(--accent); box-shadow:0 0 5px var(--accent-glow);"></div>
-        <span class="chip-label">Active Agent</span>
-        <span class="chip-value">{active_agent}</span>
-    </div>
-</div>
-""", unsafe_allow_html=True)
 
-
-# ─── HITL Confirmation ─────────────────────────────────────────────────────────
+# ─── HITL Confirmation Function Definition ─────────────────────────────────────
 def render_hitl_confirmation():
     pending = curr_session.get("hitl_pending")
     if not pending:
@@ -672,7 +675,7 @@ def render_hitl_confirmation():
     action     = pending.get("action", "book").capitalize()
     doctor     = pending.get("doctor_name", "Unknown Doctor")
     specialty  = pending.get("specialty", "")
-    date       = pending.get("date", "2026-08-10")
+    date_str   = pending.get("date", "2026-08-10")
     time_slot  = pending.get("time_slot", "")
     patient_nm = pending.get("patient_name", "")
     avail_slots = pending.get("available_slots", [])
@@ -680,6 +683,12 @@ def render_hitl_confirmation():
     fee        = pending.get("consultation_fee", 0)
     currency   = pending.get("currency", "USD")
     days_str   = ", ".join(avail_days) if avail_days else "All Week"
+
+    # Strict Date Parsing for DateInput Default Value
+    try:
+        default_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+    except (ValueError, TypeError):
+        default_date = datetime.now().date()
 
     st.markdown(f"""
     <div class="hitl-card">
@@ -695,20 +704,20 @@ def render_hitl_confirmation():
     col_slot, col_date = st.columns(2)
     with col_slot:
         chosen_slot = st.selectbox(
-            "⏰ Time Slot",
+            "⏰ Choose time slot",
             options=avail_slots if avail_slots else [time_slot],
             key=f"hitl_slot_{st.session_state.current_patient_id}",
         )
     with col_date:
-        chosen_date = st.text_input(
-            "📅 Date (YYYY-MM-DD)",
-            value=date,
+        chosen_date_obj = st.date_input(
+            "📅 Appointment date",
+            value=default_date,
+            min_value=datetime.now().date(),
             key=f"hitl_date_{st.session_state.current_patient_id}",
         )
+        chosen_date = chosen_date_obj.strftime("%Y-%m-%d")
 
-    is_date_valid = bool(re.match(r"^\d{4}-\d{2}-\d{2}$", chosen_date.strip()))
-    if not is_date_valid:
-        st.caption("⚠️ Enter a valid date in YYYY-MM-DD format.")
+    is_date_valid = bool(chosen_date_obj >= datetime.now().date())
 
     col_confirm, col_cancel = st.columns(2)
     with col_confirm:
@@ -723,13 +732,13 @@ def render_hitl_confirmation():
                 elif action.lower() == "reschedule":
                     appts = tool.list_appointments(patient_id=pending["patient_id"])
                     scheduled = [a for a in appts if a.get("status") in ("Scheduled", "Rescheduled")]
-                    result = tool.reschedule_appointment(scheduled[0]["appointment_id"], chosen_date.strip(), chosen_slot) \
+                    result = tool.reschedule_appointment(scheduled[0]["appointment_id"], chosen_date, chosen_slot) \
                              if scheduled else {"status": "Error", "message": "No appointment to reschedule."}
                 else:
                     result = tool.book_appointment(
                         patient_id=pending["patient_id"],
                         doctor_id=pending.get("doctor_id", "DOC001"),
-                        date=chosen_date.strip(),
+                        date=chosen_date,
                         time_slot=chosen_slot,
                         reason="Patient requested via MediAssist AI",
                         patient_name=patient_nm,
@@ -769,8 +778,6 @@ def render_hitl_confirmation():
             st.rerun()
 
 
-render_hitl_confirmation()
-
 # ─── Chat History ──────────────────────────────────────────────────────────────
 for message in curr_session["chat_history"]:
     role = message["role"]
@@ -781,6 +788,9 @@ for message in curr_session["chat_history"]:
         if agent_info and role == "assistant":
             st.markdown(f"<div class='node-tag'>⬡ {agent_info}</div>", unsafe_allow_html=True)
         st.markdown(content)
+
+# ─── HITL Confirmation (Rendered AT THE BOTTOM of the chat thread) ──────────────
+render_hitl_confirmation()
 
 # ─── PDF Banner ────────────────────────────────────────────────────────────────
 if curr_session.get("uploaded_pdf_name"):
@@ -795,7 +805,6 @@ st.markdown("</div>", unsafe_allow_html=True)  # close main-wrapper
 
 # ─── Core message-processing pipeline ─────────────────────────────────────────
 def process_user_message(prompt: str):
-    # Always re-fetch so we have the live session for the current patient
     session = get_current_session()
     session["chat_history"].append({"role": "user", "content": prompt})
     with st.chat_message("user"):
@@ -896,14 +905,12 @@ if not curr_session.get("hitl_pending"):
                                 st.error(f"Failed: {res.get('message')}")
 
 
-# ─── Fixed Bottom Chat Input (top-level = docked to bottom by Streamlit) ───────
+# ─── Fixed Bottom Chat Input ────────────────────────────────────────────────────
 if curr_session.get("hitl_pending"):
     st.info("⏳ Please **confirm or decline** the appointment above before sending a new message.")
 else:
-    # st.chat_input at top-level scope → Streamlit docks it to the bottom bar
     chat_prompt = st.chat_input("Ask MediAssist AI anything about your health...")
 
-    # Queued prompt from quick-action buttons takes priority
     final_prompt = None
     if st.session_state.get("queued_prompt"):
         final_prompt = st.session_state.queued_prompt
