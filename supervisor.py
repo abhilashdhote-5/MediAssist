@@ -58,6 +58,22 @@ class SupervisorAgent:
 
         user_text = last_user_message.lower().strip()
 
+        # ── View-appointment intent guard (must run BEFORE greeting check & LLM) ────
+        # These phrases clearly mean "show existing appointments", not "book new ones"
+        VIEW_APPOINTMENT_KEYWORDS = [
+            "show my appointment", "show appointment", "list appointment",
+            "view appointment", "my appointment", "check appointment",
+            "upcoming appointment", "past appointment", "appointment history",
+            "what appointment", "see my appointment", "see appointment",
+            "do i have appointment", "scheduled appointment", "booked appointment",
+        ]
+        if any(kw in user_text for kw in VIEW_APPOINTMENT_KEYWORDS):
+            return {
+                "current_intent": "view_appointment",
+                "next_node": "view_appointment_agent",
+                "agent_outputs": {}
+            }
+
         # ── Greeting / General conversation detection ─────────────────────────────
         # Strip trailing punctuation for keyword matching
         cleaned = user_text.rstrip("!?.,").strip()
@@ -95,7 +111,7 @@ class SupervisorAgent:
                     target_node = parsed.get("next_node", "symptom_agent")
                     target_intent = parsed.get("current_intent", "symptom")
                     valid_nodes = [
-                        "appointment_agent", "symptom_agent",
+                        "appointment_agent", "view_appointment_agent", "symptom_agent",
                         "medication_agent", "report_agent", "general_agent"
                     ]
                     if target_node in valid_nodes:

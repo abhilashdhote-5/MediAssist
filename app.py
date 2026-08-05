@@ -23,32 +23,34 @@ st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap');
 
-    /* ── Design Tokens (Aurora Violet theme) ── */
+    /* ── Design Tokens (Soft Powder Blue & Sky Blue theme with Peach/Cream accents) ── */
     :root {
-        --bg:            #0C0A16;
-        --bg-glow-a:     #241247;
-        --bg-glow-b:     #150E2E;
-        --surface:       #150F26;
-        --surface-2:     #1B1430;
-        --surface-3:     #241C3D;
-        --border:        rgba(255,255,255,0.07);
-        --border-md:     rgba(255,255,255,0.13);
-        --border-strong: rgba(255,255,255,0.20);
-        --accent:        #8B6CFF;
-        --accent-2:      #C77DFF;
-        --accent-dim:    rgba(139,108,255,0.16);
-        --accent-glow:   rgba(139,108,255,0.32);
-        --teal:          #34E0C9;
-        --teal-dim:      rgba(52,224,201,0.12);
-        --green:         #35D399;
-        --green-dim:     rgba(53,211,153,0.14);
-        --amber:         #F5A623;
-        --red:           #FF6B7A;
-        --text-1:        #F3F1FA;
-        --text-2:        #ACA5C7;
-        --text-3:        #6B6489;
-        --user-bubble:   linear-gradient(135deg, #7C5CFC 0%, #9B6BFF 100%);
-        --ai-bubble:     #17112B;
+        --bg:            #BFDDF0;
+        --bg-glow-a:     #8CC0EB;
+        --bg-glow-b:     #FFEBCC;
+        --surface:       #D2E6F5;
+        --surface-2:     #EBF4FB;
+        --surface-3:     #FFFFFF;
+        --border:        rgba(140, 192, 235, 0.45);
+        --border-md:     #8CC0EB;
+        --border-strong: #5296CC;
+        --accent:        #8CC0EB;
+        --accent-2:      #5296CC;
+        --accent-dim:    rgba(140, 192, 235, 0.30);
+        --accent-glow:   rgba(140, 192, 235, 0.50);
+        --cream:         #FFF9D2;
+        --peach:         #FFEBCC;
+        --teal:          #1F7199;
+        --teal-dim:      rgba(140, 192, 235, 0.25);
+        --green:         #169B62;
+        --green-dim:     rgba(22, 155, 98, 0.15);
+        --amber:         #D97706;
+        --red:           #E11D48;
+        --text-1:        #0C2336;
+        --text-2:        #234B6E;
+        --text-3:        #457096;
+        --user-bubble:   linear-gradient(135deg, #FFEBCC 0%, #FFF9D2 100%);
+        --ai-bubble:     #FFFFFF;
     }
 
     /* ── Global Reset ── */
@@ -75,14 +77,14 @@ st.markdown("""
 
     ::-webkit-scrollbar { width: 5px; height: 5px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: var(--surface-3); border-radius: 99px; }
+    ::-webkit-scrollbar-thumb { background: #8CC0EB; border-radius: 99px; }
 
     /* ══════════════════════════════════════
        SIDEBAR
     ══════════════════════════════════════ */
     [data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #171029 0%, #0F0B1D 100%) !important;
-        border-right: 1px solid var(--border) !important;
+        background: linear-gradient(180deg, #8CC0EB 0%, #BFDDF0 100%) !important;
+        border-right: 1.5px solid var(--border-md) !important;
         padding-top: 0 !important;
     }
     [data-testid="stSidebar"] > div:first-child { padding-top: 0 !important; }
@@ -93,15 +95,16 @@ st.markdown("""
         align-items: center;
         gap: 11px;
         padding: 20px 18px 16px 18px;
-        border-bottom: 1px solid var(--border);
+        border-bottom: 1.5px solid var(--border-md);
     }
     .sb-brand-icon {
         width: 36px; height: 36px;
-        background: linear-gradient(135deg, var(--accent), var(--accent-2));
+        background: linear-gradient(135deg, #8CC0EB, #FFEBCC);
         border-radius: 11px;
         display: flex; align-items: center; justify-content: center;
         font-size: 17px; flex-shrink: 0;
-        box-shadow: 0 4px 18px var(--accent-glow);
+        box-shadow: 0 4px 18px rgba(140,192,235,0.6);
+        color: #0C2336;
     }
     .sb-brand-name {
         font-family: 'Sora', sans-serif;
@@ -123,11 +126,12 @@ st.markdown("""
     }
 
     .pat-card {
-        background: var(--surface-2);
-        border: 1px solid var(--border);
+        background: #FFFFFF;
+        border: 1.5px solid var(--border-md);
         border-radius: 12px;
         padding: 13px;
         margin-bottom: 6px;
+        box-shadow: 0 2px 10px rgba(140,192,235,0.25);
     }
     .pat-card-row {
         display: flex;
@@ -135,11 +139,11 @@ st.markdown("""
         font-size: 0.76rem;
         padding: 4px 0;
         color: var(--text-2);
-        border-bottom: 1px solid var(--border);
+        border-bottom: 1px solid rgba(140,192,235,0.3);
     }
     .pat-card-row:last-child { border-bottom: none; }
     .pat-card-row span { color: var(--text-3); }
-    .pat-card-row strong { color: var(--teal); font-weight: 500; }
+    .pat-card-row strong { color: #1F7199; font-weight: 600; }
 
     .dag-pipeline { padding: 4px 0; }
     .dag-step {
@@ -153,35 +157,35 @@ st.markdown("""
     .dag-step-dot {
         width: 6px; height: 6px;
         border-radius: 50%;
-        background: var(--accent);
+        background: #5296CC;
         flex-shrink: 0;
-        box-shadow: 0 0 7px var(--accent-glow);
+        box-shadow: 0 0 7px rgba(82,150,204,0.5);
     }
     .dag-connector { width: 1px; height: 10px; background: var(--border-md); margin-left: 2px; }
 
     [data-testid="stSidebar"] .stSelectbox > div > div {
-        background: var(--surface-2) !important;
-        border: 1px solid var(--border-md) !important;
+        background: #FFFFFF !important;
+        border: 1.5px solid var(--border-md) !important;
         border-radius: 10px !important;
         color: var(--text-1) !important;
         font-size: 0.82rem !important;
     }
 
     [data-testid="stSidebar"] .stButton > button {
-        background: var(--surface-2) !important;
-        border: 1px solid var(--border-md) !important;
-        color: var(--text-2) !important;
+        background: #FFFFFF !important;
+        border: 1.5px solid var(--border-md) !important;
+        color: var(--text-1) !important;
         border-radius: 10px !important;
         font-size: 0.8rem !important;
-        font-weight: 500 !important;
+        font-weight: 600 !important;
         padding: 7px 12px !important;
         transition: all 0.15s ease !important;
         width: 100% !important;
     }
     [data-testid="stSidebar"] .stButton > button:hover {
-        background: var(--surface-3) !important;
-        border-color: var(--accent) !important;
-        color: var(--text-1) !important;
+        background: #FFF9D2 !important;
+        border-color: #8CC0EB !important;
+        color: #0C2336 !important;
     }
 
     /* ══════════════════════════════════════
@@ -197,10 +201,10 @@ st.markdown("""
         position: sticky;
         top: 0;
         z-index: 999;
-        background: var(--bg);
+        background: #BFDDF0;
         padding-top: 20px;
         padding-bottom: 12px;
-        border-bottom: 1px solid var(--border);
+        border-bottom: 1.5px solid var(--border-md);
         margin-bottom: 20px;
     }
 
@@ -214,35 +218,35 @@ st.markdown("""
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        background: var(--accent-dim);
-        border: 1px solid rgba(139,108,255,0.35);
+        background: #FFEBCC;
+        border: 1px solid #F7D7A3;
         border-radius: 20px;
         padding: 4px 11px;
         font-size: 0.65rem;
         font-weight: 700;
-        color: #C4B4FF;
+        color: #7A4B00;
         text-transform: uppercase;
         letter-spacing: 0.07em;
     }
-    .chat-badge-dot { width: 5px; height: 5px; border-radius: 50%; background: #C4B4FF; animation: pulse-dot 2s infinite; }
+    .chat-badge-dot { width: 5px; height: 5px; border-radius: 50%; background: #D97706; animation: pulse-dot 2s infinite; }
     @keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:.4;transform:scale(.8);} }
 
     .hero-greeting { font-size: 0.95rem; color: var(--text-2); margin-top: 16px; }
     .hero-title {
         font-family: 'Sora', sans-serif;
         font-size: 2rem;
-        font-weight: 700;
-        color: var(--text-1);
+        font-weight: 800;
+        color: #0C2336;
         letter-spacing: -0.03em;
         line-height: 1.15;
         margin-top: 2px;
         margin-bottom: 6px;
-        background: linear-gradient(90deg, #F3F1FA 40%, #C4B4FF 100%);
+        background: linear-gradient(90deg, #0C2336 40%, #234B6E 100%);
         -webkit-background-clip: text;
         background-clip: text;
         -webkit-text-fill-color: transparent;
     }
-    .hero-subtitle { font-size: 0.85rem; color: var(--text-3); margin-bottom: 22px; }
+    .hero-subtitle { font-size: 0.85rem; color: var(--text-2); margin-bottom: 22px; }
 
     /* ── Robot mascot ── */
     .mascot-wrap {
@@ -256,9 +260,9 @@ st.markdown("""
         border-radius: 50%;
         display: flex; align-items: center; justify-content: center;
         font-size: 62px;
-        background: radial-gradient(circle at 35% 30%, #2A1F4D 0%, #170F2C 70%);
-        border: 1px solid var(--border-md);
-        box-shadow: 0 0 0 1px rgba(139,108,255,0.08), 0 20px 60px rgba(139,108,255,0.22), inset 0 0 40px rgba(139,108,255,0.10);
+        background: radial-gradient(circle at 35% 30%, #8CC0EB 0%, #BFDDF0 70%);
+        border: 3px solid #FFFFFF;
+        box-shadow: 0 12px 40px rgba(140,192,235,0.6), inset 0 0 30px rgba(255,249,210,0.5);
         animation: float-bot 4.5s ease-in-out infinite;
     }
     @keyframes float-bot { 0%,100%{transform:translateY(0px);} 50%{transform:translateY(-9px);} }
@@ -268,8 +272,8 @@ st.markdown("""
     .cap-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 8px; }
 
     .stButton.qa-button > button {
-        background: var(--surface-2) !important;
-        border: 1px solid var(--border) !important;
+        background: #FFFFFF !important;
+        border: 1.5px solid var(--border-md) !important;
         border-radius: 14px !important;
         padding: 16px 14px !important;
         text-align: left !important;
@@ -278,12 +282,13 @@ st.markdown("""
         color: var(--text-1) !important;
         transition: all 0.18s ease !important;
         width: 100% !important;
+        box-shadow: 0 3px 12px rgba(140,192,235,0.25) !important;
     }
     .stButton.qa-button > button:hover {
-        border-color: var(--accent) !important;
-        background: var(--surface-3) !important;
+        border-color: #5296CC !important;
+        background: #FFF9D2 !important;
         transform: translateY(-2px);
-        box-shadow: 0 10px 26px rgba(139,108,255,0.18) !important;
+        box-shadow: 0 10px 24px rgba(140,192,235,0.45) !important;
     }
 
     @media (max-width: 700px) { .cap-grid { grid-template-columns: repeat(2, 1fr); } }
@@ -296,12 +301,13 @@ st.markdown("""
     .status-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 0; }
     .status-chip {
         display: inline-flex; align-items: center; gap: 6px;
-        background: var(--surface-2); border: 1px solid var(--border);
+        background: #FFFFFF; border: 1.5px solid var(--border-md);
         border-radius: 8px; padding: 6px 11px; font-size: 0.72rem; color: var(--text-2);
+        box-shadow: 0 2px 8px rgba(140,192,235,0.2);
     }
     .status-chip .chip-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 5px var(--green-dim); }
     .status-chip .chip-label { color: var(--text-3); text-transform: uppercase; font-size: 0.6rem; letter-spacing: 0.06em; font-weight: 700; }
-    .status-chip .chip-value { color: var(--text-1); font-weight: 500; }
+    .status-chip .chip-value { color: var(--text-1); font-weight: 600; }
 
     /* ══════════════════════════════════════
        CHAT MESSAGES
@@ -319,8 +325,8 @@ st.markdown("""
 
     [data-testid="stChatMessage"] [data-testid="chatAvatarIcon-user"],
     [data-testid="stChatMessage"] [data-testid="chatAvatarIcon-assistant"] {
-        background: var(--surface-3) !important;
-        border: 1px solid var(--border) !important;
+        background: #FFFFFF !important;
+        border: 1.5px solid #8CC0EB !important;
         border-radius: 9px !important;
         width: 30px !important; height: 30px !important;
         font-size: 12px !important;
@@ -328,161 +334,230 @@ st.markdown("""
 
     [data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-user"]) .stMarkdown {
         background: var(--user-bubble) !important;
-        border: 1px solid rgba(139,108,255,0.4) !important;
+        border: 1.5px solid #F7D7A3 !important;
         border-radius: 14px 14px 4px 14px !important;
         padding: 14px 18px !important;
         margin-left: 8px;
-        box-shadow: 0 8px 22px rgba(124,92,252,0.20);
+        box-shadow: 0 6px 18px rgba(255, 235, 204, 0.6);
     }
-    [data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-user"]) p { color: #FFFFFF !important; }
+    [data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-user"]) p { color: #0C2336 !important; }
 
     [data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-assistant"]) .stMarkdown {
         background: var(--ai-bubble) !important;
-        border: 1px solid var(--border) !important;
+        border: 1.5px solid #8CC0EB !important;
         border-radius: 14px 14px 14px 4px !important;
         padding: 14px 18px !important;
         margin-right: 8px;
+        box-shadow: 0 4px 14px rgba(140, 192, 235, 0.25);
     }
 
     [data-testid="stChatMessage"] p { font-size: 0.875rem !important; line-height: 1.65 !important; color: var(--text-1) !important; margin-bottom: 6px !important; }
-    [data-testid="stChatMessage"] strong { color: var(--text-1) !important; font-weight: 600 !important; }
+    [data-testid="stChatMessage"] strong { color: #0C2336 !important; font-weight: 700 !important; }
     [data-testid="stChatMessage"] code {
         font-family: 'Geist Mono', 'Fira Code', monospace !important;
-        background: var(--surface-3) !important; border: 1px solid var(--border) !important;
-        padding: 1px 5px !important; border-radius: 4px !important; font-size: 0.8rem !important; color: var(--teal) !important;
+        background: #EBF4FB !important; border: 1px solid #8CC0EB !important;
+        padding: 1px 5px !important; border-radius: 4px !important; font-size: 0.8rem !important; color: #1F7199 !important;
     }
-    [data-testid="stChatMessage"] pre { background: var(--surface-3) !important; border: 1px solid var(--border) !important; border-radius: 8px !important; padding: 12px !important; overflow-x: auto !important; }
+    [data-testid="stChatMessage"] pre { background: #EBF4FB !important; border: 1px solid #8CC0EB !important; border-radius: 8px !important; padding: 12px !important; overflow-x: auto !important; }
     [data-testid="stChatMessage"] ul, [data-testid="stChatMessage"] ol { padding-left: 18px !important; }
     [data-testid="stChatMessage"] li { font-size: 0.875rem !important; line-height: 1.65 !important; color: var(--text-1) !important; margin-bottom: 2px !important; }
     [data-testid="stChatMessage"] h1, [data-testid="stChatMessage"] h2, [data-testid="stChatMessage"] h3, [data-testid="stChatMessage"] h4 { color: var(--text-1) !important; margin-top: 8px !important; margin-bottom: 6px !important; }
 
     .node-tag {
         display: inline-flex; align-items: center; gap: 5px;
-        background: var(--accent-dim); border: 1px solid rgba(139,108,255,0.35); color: #C4B4FF;
+        background: #FFEBCC; border: 1px solid #F7D7A3; color: #7A4B00;
         padding: 2px 9px; border-radius: 99px; font-size: 0.63rem; font-weight: 700;
         letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 8px;
-    }
 
     /* ══════════════════════════════════════
-       BOTTOM INPUT BAR & EMBEDDED TOOLBAR
+       FIXED UNIFIED BOTTOM INPUT BAR
     ══════════════════════════════════════ */
+
+    /* Bottom gradient fade background */
     html body [data-testid="stBottom"],
     html body [data-testid="stBottom"] > div {
-        background: linear-gradient(180deg, rgba(12,10,22,0) 0%, var(--bg) 35%) !important;
+        background: linear-gradient(180deg, rgba(191,221,240,0) 0%, #BFDDF0 35%) !important;
         border-top: none !important;
     }
+
+    /* Bottom container layout */
     html body [data-testid="stBottomBlockContainer"],
     html body .stChatFloatingInputContainer {
         background: transparent !important;
-        max-width: 860px !important;
+        max-width: 900px !important;
         margin-left: auto !important;
         margin-right: auto !important;
-        padding: 8px 24px 18px 24px !important;
+        padding: 6px 18px 18px 18px !important;
     }
 
-    div[data-testid="stPopover"] {
-        height: 100%;
-    }
-    div[data-testid="stPopover"] > button,
-    html body [data-testid="stPopover"] button {
-        background: var(--surface-2) !important;
-        border: 1px solid var(--border-md) !important;
-        border-radius: 10px !important;
-        color: var(--text-2) !important;
-        font-size: 1.1rem !important;
-        font-weight: 500 !important;
-        height: 2.4rem !important;
-        min-width: 2.6rem !important;
-        padding: 0 10px !important;
-        transition: all 0.15s ease !important;
-    }
-    html body [data-testid="stPopover"] button:hover {
-        background: var(--surface-3) !important;
-        color: var(--accent-2) !important;
-        border-color: var(--accent) !important;
-    }
-
+    /* ── Chat input pill ── */
     html body [data-testid="stChatInput"] {
-        background: var(--surface-2) !important;
-        border: 1px solid var(--border-md) !important;
-        border-radius: 14px !important;
-        box-shadow: 0 0 0 0 transparent !important;
-        transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
+        background: #FFFFFF !important;
+        border: 2px solid #8CC0EB !important;
+        border-radius: 999px !important;
+        box-shadow: 0 6px 24px rgba(140,192,235,0.35) !important;
+        transition: border-color 0.18s ease, box-shadow 0.18s ease !important;
+        margin-left: 95px !important; /* Make room for fixed 📎 and 🎤 buttons on left */
     }
     html body [data-testid="stChatInput"]:focus-within {
-        border-color: var(--accent) !important;
-        box-shadow: 0 0 0 3px var(--accent-glow) !important;
+        border-color: #5296CC !important;
+        box-shadow: 0 0 0 3px rgba(140,192,235,0.4), 0 6px 24px rgba(140,192,235,0.35) !important;
     }
     html body [data-testid="stChatInput"] [data-baseweb="textarea"],
-    html body [data-testid="stChatInput"] [data-baseweb="base-input"] { background: transparent !important; border: none !important; }
+    html body [data-testid="stChatInput"] [data-baseweb="base-input"] {
+        background: transparent !important;
+        border: none !important;
+    }
     html body [data-testid="stChatInput"] textarea {
-        color: var(--text-1) !important;
-        -webkit-text-fill-color: var(--text-1) !important;
-        caret-color: var(--accent) !important;
-        font-size: 0.875rem !important;
+        color: #0C2336 !important;
+        -webkit-text-fill-color: #0C2336 !important;
+        caret-color: #5296CC !important;
+        font-size: 0.9rem !important;
         font-family: 'Inter', sans-serif !important;
         background: transparent !important;
-        padding: 10px 14px !important;
+        padding: 12px 18px !important;
+        line-height: 1.5 !important;
     }
-    html body [data-testid="stChatInput"] textarea::placeholder { color: var(--text-3) !important; opacity: 1 !important; }
-
+    html body [data-testid="stChatInput"] textarea::placeholder {
+        color: #457096 !important;
+        opacity: 1 !important;
+    }
+    /* Send button inside the pill */
     html body [data-testid="stChatInput"] button {
-        background: linear-gradient(135deg, var(--accent), var(--accent-2)) !important;
-        border-radius: 9px !important;
-        width: 2.1rem !important; height: 2.1rem !important;
+        background: linear-gradient(135deg, #8CC0EB, #5296CC) !important;
+        border-radius: 50% !important;
+        width: 2rem !important;
+        height: 2rem !important;
         transition: transform 0.1s ease !important;
     }
-    html body [data-testid="stChatInput"] button:hover { transform: scale(1.06) !important; }
-    html body [data-testid="stChatInput"] button svg { fill: #FFFFFF !important; }
+    html body [data-testid="stChatInput"] button:hover {
+        transform: scale(1.08) !important;
+    }
+    html body [data-testid="stChatInput"] button svg {
+        fill: #FFFFFF !important;
+    }
+
+    /* ── FIXED Bottom action buttons row (📎 upload + 🎤 mic) ── */
+    [data-testid="stElementContainer"]:has(#bottom-actions-container),
+    div:has(> #bottom-actions-container),
+    .stMarkdown:has(#bottom-actions-container) {
+        position: fixed !important;
+        bottom: 24px !important;
+        left: calc(50% - 432px) !important;
+        z-index: 999999 !important;
+        width: auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    #bottom-actions-container {
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+    }
+
+    .bottom-actions-row .stPopover > button,
+    .bottom-actions-row [data-testid="stPopover"] button {
+        background: #FFFFFF !important;
+        border: 2px solid #8CC0EB !important;
+        border-radius: 50% !important;
+        color: #0C2336 !important;
+        font-size: 1.1rem !important;
+        height: 2.5rem !important;
+        width: 2.5rem !important;
+        min-width: 2.5rem !important;
+        padding: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        transition: all 0.15s ease !important;
+        box-shadow: 0 4px 12px rgba(140,192,235,0.3) !important;
+    }
+    .bottom-actions-row .stPopover > button:hover,
+    .bottom-actions-row [data-testid="stPopover"] button:hover {
+        background: #FFF9D2 !important;
+        border-color: #5296CC !important;
+        transform: scale(1.05) !important;
+    }
+
+    /* Audio input mic button styling */
+    .bottom-actions-row [data-testid="stAudioInput"] {
+        display: block !important;
+    }
+    .bottom-actions-row [data-testid="stAudioInput"] > label {
+        display: none !important;
+    }
+    .bottom-actions-row [data-testid="stAudioInput"] button {
+        background: #FFFFFF !important;
+        border: 2px solid #8CC0EB !important;
+        border-radius: 50% !important;
+        color: #0C2336 !important;
+        height: 2.5rem !important;
+        width: 2.5rem !important;
+        min-width: 2.5rem !important;
+        padding: 0 !important;
+        box-shadow: 0 4px 12px rgba(140,192,235,0.3) !important;
+        transition: all 0.15s ease !important;
+    }
+    .bottom-actions-row [data-testid="stAudioInput"] button:hover {
+        background: #FFF9D2 !important;
+        border-color: #5296CC !important;
+        transform: scale(1.05) !important;
+    }
+
+    /* Hide default audio-input if outside bottom-actions-row */
+    [data-testid="stAudioInput"]:not(.bottom-actions-row [data-testid="stAudioInput"]) {
+        display: none !important;
+    }
 
     /* ══════════════════════════════════════
        HITL FORM & MISC WIDGETS
     ══════════════════════════════════════ */
     .hitl-card {
-        background: var(--surface-2);
-        border: 1px solid rgba(139,108,255,0.35);
+        background: #FFFFFF;
+        border: 2px solid #8CC0EB;
         border-radius: 16px;
         padding: 20px 22px;
         margin: 16px 0;
-        box-shadow: 0 0 28px var(--accent-glow);
+        box-shadow: 0 6px 24px rgba(140,192,235,0.35);
     }
     .hitl-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
     .hitl-title { font-family: 'Sora', sans-serif; font-size: 0.95rem; font-weight: 700; color: var(--text-1); }
     .hitl-badge {
-        background: var(--accent-dim); border: 1px solid rgba(139,108,255,0.4); color: #C4B4FF;
+        background: #FFEBCC; border: 1px solid #F7D7A3; color: #7A4B00;
         font-size: 0.62rem; font-weight: 700; padding: 3px 9px; border-radius: 99px; text-transform: uppercase; letter-spacing: 0.05em;
     }
     .hitl-detail-row { font-size: 0.8rem; color: var(--text-2); margin-bottom: 4px; line-height: 1.6; }
     .hitl-detail-row b { color: var(--text-1); font-weight: 500; }
 
     .stButton > button {
-        background: var(--surface-2) !important;
-        border: 1px solid var(--border-md) !important;
-        color: var(--text-2) !important;
+        background: #FFFFFF !important;
+        border: 1.5px solid #8CC0EB !important;
+        color: #0C2336 !important;
         border-radius: 10px !important;
         font-size: 0.82rem !important;
-        font-weight: 500 !important;
+        font-weight: 600 !important;
         font-family: 'Inter', sans-serif !important;
         transition: all 0.15s ease !important;
     }
-    .stButton > button:hover { background: var(--surface-3) !important; border-color: var(--border-strong) !important; color: var(--text-1) !important; }
-    [data-testid="baseButton-primary"] { background: linear-gradient(135deg, var(--accent), var(--accent-2)) !important; border: none !important; color: #FFFFFF !important; }
+    .stButton > button:hover { background: #FFF9D2 !important; border-color: #5296CC !important; color: #0C2336 !important; }
+    [data-testid="baseButton-primary"] { background: linear-gradient(135deg, #8CC0EB, #5296CC) !important; border: none !important; color: #FFFFFF !important; }
     [data-testid="baseButton-primary"]:hover { filter: brightness(1.08); }
 
     .stSelectbox > div > div {
-        background: var(--surface-2) !important; border: 1px solid var(--border-md) !important;
-        border-radius: 10px !important; color: var(--text-1) !important; font-size: 0.82rem !important;
+        background: #FFFFFF !important; border: 1.5px solid #8CC0EB !important;
+        border-radius: 10px !important; color: #0C2336 !important; font-size: 0.82rem !important;
     }
     .stDateInput > div > div > input {
-        background: var(--surface-2) !important; border: 1px solid var(--border-md) !important;
-        border-radius: 10px !important; color: var(--text-1) !important; font-size: 0.82rem !important;
+        background: #FFFFFF !important; border: 1.5px solid #8CC0EB !important;
+        border-radius: 10px !important; color: #0C2336 !important; font-size: 0.82rem !important;
     }
 
-    [data-testid="stAlert"] { background: var(--surface-2) !important; border: 1px solid var(--border) !important; border-radius: 12px !important; color: var(--text-2) !important; font-size: 0.82rem !important; }
+    [data-testid="stAlert"] { background: #FFFFFF !important; border: 1.5px solid #8CC0EB !important; border-radius: 12px !important; color: #0C2336 !important; font-size: 0.82rem !important; }
 
-    hr { border-color: var(--border) !important; margin: 12px 0 !important; }
+    hr { border-color: var(--border-md) !important; margin: 12px 0 !important; }
 
-    [data-testid="stFileUploader"] { background: var(--surface-2) !important; border: 1px dashed var(--border-md) !important; border-radius: 10px !important; padding: 10px !important; }
+    [data-testid="stFileUploader"] { background: #FFFFFF !important; border: 1.5px dashed #8CC0EB !important; border-radius: 10px !important; padding: 10px !important; }
     [data-testid="stFileUploader"] label { color: var(--text-2) !important; font-size: 0.8rem !important; }
 
     .stCaption, [data-testid="stCaption"] { color: var(--text-3) !important; font-size: 0.72rem !important; }
@@ -490,8 +565,8 @@ st.markdown("""
 
     .pdf-banner {
         display: flex; align-items: center; gap: 8px;
-        background: var(--teal-dim); border: 1px solid rgba(52,224,201,0.28);
-        border-radius: 10px; padding: 9px 13px; margin-bottom: 12px; font-size: 0.78rem; color: var(--teal); font-weight: 500;
+        background: #FFEBCC; border: 1.5px solid #F7D7A3;
+        border-radius: 10px; padding: 9px 13px; margin-bottom: 12px; font-size: 0.78rem; color: #7A4B00; font-weight: 600;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -661,8 +736,8 @@ if chat_is_empty:
         fill="none" stroke="url(#grad)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
       <defs>
         <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stop-color="#8B6CFF"/>
-            <stop offset="100%" stop-color="#34E0C9"/>
+            <stop offset="0%" stop-color="#8CC0EB"/>
+            <stop offset="100%" stop-color="#FFEBCC"/>
         </linearGradient>
       </defs>
     </svg>
@@ -853,15 +928,19 @@ st.markdown("</div>", unsafe_allow_html=True)  # close main-wrapper
 
 # ─── Core message-processing pipeline ─────────────────────────────────────────
 def process_user_message(prompt: str):
+    if not isinstance(prompt, str) or not prompt.strip():
+        return
+
     session = get_current_session()
-    session["chat_history"].append({"role": "user", "content": prompt})
+    session["chat_history"].append({"role": "user", "content": prompt.strip()})
     with st.chat_message("user"):
-        st.markdown(prompt)
+        st.markdown(prompt.strip())
 
     messages_history = [
-        HumanMessage(content=m["content"]) if m["role"] == "user"
-        else AIMessage(content=m["content"])
+        HumanMessage(content=str(m["content"])) if m["role"] == "user"
+        else AIMessage(content=str(m["content"]))
         for m in session["chat_history"]
+        if isinstance(m.get("content"), str)
     ]
 
     pdf_context = ""
@@ -914,182 +993,81 @@ def process_user_message(prompt: str):
                 st.error(f"LangGraph error: {str(e)}")
 
 
-# ─── PDF Upload Popover Toolbar ─────────────────────────────────────────────────
-if not curr_session.get("hitl_pending"):
-    with st.container():
-        attach_col, spacer = st.columns([1, 20])
-        with attach_col:
-            with st.popover("📎"):
-                st.markdown("**Upload Medical PDF**")
-                st.caption("Lab reports, blood work, prescriptions")
-                uploaded_file = st.file_uploader(
-                    "PDF",
-                    type=["pdf"],
-                    key=f"pdf_uploader_{st.session_state.current_patient_id}",
-                    label_visibility="collapsed",
-                )
-                if uploaded_file is not None:
-                    if curr_session.get("uploaded_pdf_name") != uploaded_file.name:
-                        with st.spinner("Indexing with SentenceTransformers + FAISS..."):
-                            from utils.rag_pipeline import AdvancedRAGPipeline
-                            rag = AdvancedRAGPipeline()
-                            res = rag.process_pdf_bytes(uploaded_file.getvalue(), filename=uploaded_file.name)
-                            if res.get("status") == "Success":
-                                curr_session["rag_pipeline"] = rag
-                                curr_session["uploaded_pdf_name"] = uploaded_file.name
-                                st.success(f"Indexed: {res.get('num_chunks')} chunks ready.")
-                                curr_session["chat_history"].append({
-                                    "role": "assistant",
-                                    "content": (
-                                        f"📄 **Lab Report Indexed:** `{uploaded_file.name}` "
-                                        f"({res.get('num_chunks')} semantic chunks).\n\n"
-                                        "Ask me to explain, summarize, or flag abnormal values from your report!"
-                                    ),
-                                    "agent_info": "Report RAG Pipeline",
-                                })
-                                st.toast(f"'{uploaded_file.name}' indexed!", icon="📄")
-                                st.rerun()
-                            else:
-                                st.error(f"Failed: {res.get('message')}")
-
-
-# ─── Fixed Bottom Chat Input with Injected Voice Button ─────────────────────────
+# ─── Bottom Input Bar ───────────────────────────────────────────────────────────
 if curr_session.get("hitl_pending"):
     st.info("⏳ Please **confirm or decline** the appointment above before sending a new message.")
 else:
-    # 1. Native Streamlit Chat Input Box
-    chat_prompt = st.chat_input("Ask MediAssist AI anything about your health...")
+    # ── Action buttons row (FIXED to bottom left of chat_input) ─────────────────
+    st.markdown('<div id="bottom-actions-container" class="bottom-actions-row">', unsafe_allow_html=True)
 
-    # 2. Injected Browser-Native Web Speech Voice Button attached to the prompt palette
-    voice_component = """
-    <div id="mic-wrapper" style="display:flex;align-items:center;gap:8px;">
-      <button id="mic-btn" aria-label="Start voice input" title="Click to Speak" style="
-            background: linear-gradient(135deg,#FF0080,#FF6B7A);
-            border: none;
-            color: #fff;
-            width: 44px; height:44px; border-radius: 50%;
-            display:flex;align-items:center;justify-content:center;cursor:pointer;
-            box-shadow:0 8px 24px rgba(255,107,122,0.18);outline:none;">
-            <svg id="mic-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
-                <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
-            </svg>
-      </button>
-      <div id="mic-status" style="color:#C4B4FF;font-size:0.85rem;display:none;">Listening...</div>
-    </div>
+    act_col1, act_col2 = st.columns([1, 1])
 
-    <script>
-    (function(){
-        const parentDoc = window.parent.document;
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (!SpeechRecognition) {
-            // Hide if not supported
-            return;
-        }
+    with act_col1:
+        with st.popover("📎", help="Upload a medical PDF"):
+            st.markdown("**📄 Upload Medical PDF**")
+            st.caption("Lab reports, blood work, prescriptions")
+            uploaded_file = st.file_uploader(
+                "PDF",
+                type=["pdf"],
+                key=f"pdf_uploader_{st.session_state.current_patient_id}",
+                label_visibility="collapsed",
+            )
+            if uploaded_file is not None:
+                if curr_session.get("uploaded_pdf_name") != uploaded_file.name:
+                    with st.spinner("Indexing with SentenceTransformers + FAISS…"):
+                        from utils.rag_pipeline import AdvancedRAGPipeline
+                        rag = AdvancedRAGPipeline()
+                        res = rag.process_pdf_bytes(
+                            uploaded_file.getvalue(), filename=uploaded_file.name
+                        )
+                        if res.get("status") == "Success":
+                            curr_session["rag_pipeline"] = rag
+                            curr_session["uploaded_pdf_name"] = uploaded_file.name
+                            st.success(f"Indexed {res.get('num_chunks')} chunks ✓")
+                            curr_session["chat_history"].append({
+                                "role": "assistant",
+                                "content": (
+                                    f"📄 **Lab Report Indexed:** `{uploaded_file.name}` "
+                                    f"({res.get('num_chunks')} semantic chunks).\n\n"
+                                    "Ask me to explain, summarize, or flag abnormal values!"
+                                ),
+                                "agent_info": "Report RAG Pipeline",
+                            })
+                            st.toast(f"'{uploaded_file.name}' indexed!", icon="📄")
+                            st.rerun()
+                        else:
+                            st.error(f"Failed: {res.get('message')}")
 
-        const recognition = new SpeechRecognition();
-        recognition.continuous = false;
-        recognition.interimResults = true;
-        recognition.lang = 'en-US';
+    with act_col2:
+        audio_value = st.audio_input(
+            "🎤",
+            key=f"voice_input_{st.session_state.current_patient_id}",
+        )
+        if audio_value is not None:
+            audio_bytes = audio_value.read()
+            if audio_bytes and st.session_state.get("_last_audio_bytes") != audio_bytes:
+                st.session_state["_last_audio_bytes"] = audio_bytes
+                from utils.voice_input import transcribe_audio
+                with st.spinner("🎙️ Transcribing…"):
+                    transcribed = transcribe_audio(audio_bytes, filename="audio.webm")
+                if transcribed:
+                    st.toast(f"🎙️ Heard: *{transcribed}*", icon="🎤")
+                    st.session_state.queued_prompt = transcribed
+                    st.rerun()
 
-        // Try to locate the chat input container and textarea (robust selectors)
-        const chatContainer = parentDoc.querySelector('[data-testid="stChatInput"]');
-        let textarea = null;
-        if (chatContainer) {
-            textarea = chatContainer.querySelector('textarea');
-        }
-        if (!textarea) {
-            textarea = parentDoc.querySelector('textarea');
-        }
+    st.markdown("</div>", unsafe_allow_html=True)
 
-        // Create or move the mic button into the chat container if available
-        const wrapper = document.getElementById('mic-wrapper');
-        const micBtn = document.getElementById('mic-btn');
-        const micStatus = document.getElementById('mic-status');
+    # ── Chat input pill ──────────────────────────────────────────────────────────
+    chat_prompt = st.chat_input("Ask MediAssist AI anything about your health…")
 
-        if (chatContainer) {
-            // append wrapper at the end of chat input palette
-            chatContainer.style.position = 'relative';
-            chatContainer.appendChild(wrapper);
-            wrapper.style.position = 'absolute';
-            wrapper.style.right = '12px';
-            wrapper.style.top = '50%';
-            wrapper.style.transform = 'translateY(-50%)';
-            wrapper.style.zIndex = 9999;
-        } else {
-            // fallback: attach to body bottom-right
-            wrapper.style.position = 'fixed';
-            wrapper.style.bottom = '28px';
-            wrapper.style.right = '24px';
-            wrapper.style.zIndex = 99999;
-            document.body.appendChild(wrapper);
-        }
-
-        let isRecording = false;
-
-        micBtn.addEventListener('click', () => {
-            if (!isRecording) {
-                recognition.start();
-            } else {
-                recognition.stop();
-            }
-        });
-
-        recognition.onstart = () => {
-            isRecording = true;
-            micStatus.style.display = 'block';
-            micBtn.style.transform = 'scale(1.06)';
-        };
-
-        recognition.onend = () => {
-            isRecording = false;
-            micStatus.style.display = 'none';
-            micBtn.style.transform = 'scale(1)';
-        };
-
-        recognition.onerror = (ev) => {
-            console.warn('Speech recognition error', ev);
-            recognition.stop();
-        };
-
-        recognition.onresult = (event) => {
-            const results = event.results;
-            let interim = '';
-            let finalTranscript = '';
-            for (let i = 0; i < results.length; i++) {
-                const res = results[i];
-                if (res.isFinal) {
-                    finalTranscript += res[0].transcript;
-                } else {
-                    interim += res[0].transcript;
-                }
-            }
-            const textToShow = (finalTranscript + (interim ? (finalTranscript ? ' ' : '') + interim : '')).trim();
-            if (textarea) {
-                textarea.value = textToShow;
-                textarea.dispatchEvent(new Event('input', { bubbles: true }));
-                textarea.focus();
-            } else {
-                // As a fallback, place text into the first input found
-                const anyInput = parentDoc.querySelector('input, textarea');
-                if (anyInput) {
-                    anyInput.value = textToShow;
-                    anyInput.dispatchEvent(new Event('input', { bubbles: true }));
-                }
-            }
-        };
-    })();
-    </script>
-    """
-    components.html(voice_component, height=1, width=0)
-
-    # 3. Process submitted prompt
+    # ── Process prompt ───────────────────────────────────────────────────────────
     final_prompt = None
     if st.session_state.get("queued_prompt"):
         final_prompt = st.session_state.queued_prompt
         st.session_state.queued_prompt = None
-    elif chat_prompt:
+    elif isinstance(chat_prompt, str) and chat_prompt.strip():
         final_prompt = chat_prompt
 
-    if final_prompt:
+    if isinstance(final_prompt, str) and final_prompt.strip():
         process_user_message(final_prompt)
+
