@@ -199,5 +199,29 @@
     "reason_for_visit": "Test cancel",
     "created_at": "2026-08-04T15:05:42.058841",
     "cancelled_at": "2026-08-04T15:05:42.064765"
+  },
+  {
+    "appointment_id": "APT1019",
+    "patient_id": "PAT0001",
+    "patient_name": "Amber Perez",
+    "doctor_id": "DOC002",
+    "doctor_name": "Dr. Joshua Walker",
+    "appointment_date": "2026-08-10",
+    "time_slot": "04:00 PM",
+    "status": "Scheduled",
+    "reason_for_visit": "Patient requested appointment via MediAssist AI",
+    "created_at": "2026-08-04T15:15:08.700652"
+  },
+  {
+    "appointment_id": "APT1020",
+    "patient_id": "PAT0001",
+    "patient_name": "Amber Perez",
+    "doctor_id": "DOC002",
+    "doctor_name": "Dr. Joshua Walker",
+    "appointment_date": "2026-08-11",
+    "time_slot": "09:00 AM",
+    "status": "Scheduled",
+    "reason_for_visit": "Patient requested appointment via MediAssist AI",
+    "created_at": "2026-08-05T10:37:50.285924"
   }
 ]

@@ -6,6 +6,7 @@ from agents.symptom_agent import assess_symptoms
 from agents.medication_agent import get_medication_info
 from agents.report_agent import explain_lab_report
 from agents.reflection_node import validate_response
+from agents.general_agent import handle_general_conversation
 
 def build_mediassist_graph():
     """
@@ -19,6 +20,7 @@ def build_mediassist_graph():
     workflow.add_node("symptom_agent", assess_symptoms)
     workflow.add_node("medication_agent", get_medication_info)
     workflow.add_node("report_agent", explain_lab_report)
+    workflow.add_node("general_agent", handle_general_conversation)
     workflow.add_node("reflection_node", validate_response)
 
     # 2. Set Workflow Entry Point
@@ -32,7 +34,8 @@ def build_mediassist_graph():
             "appointment_agent": "appointment_agent",
             "symptom_agent": "symptom_agent",
             "medication_agent": "medication_agent",
-            "report_agent": "report_agent"
+            "report_agent": "report_agent",
+            "general_agent": "general_agent"
         }
     )
 
@@ -41,6 +44,7 @@ def build_mediassist_graph():
     workflow.add_edge("symptom_agent", "reflection_node")
     workflow.add_edge("medication_agent", "reflection_node")
     workflow.add_edge("report_agent", "reflection_node")
+    workflow.add_edge("general_agent", "reflection_node")
 
     # 5. Exit Point after Reflection
     workflow.add_edge("reflection_node", END)

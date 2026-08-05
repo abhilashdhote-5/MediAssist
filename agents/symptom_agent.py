@@ -25,10 +25,13 @@ class SymptomAgent:
         messages = state.get("messages", [])
         last_user_message = ""
         for msg in reversed(messages):
-            content = getattr(msg, "content", str(msg))
-            if content:
-                last_user_message = content
-                break
+            from langchain_core.messages import HumanMessage
+            if isinstance(msg, HumanMessage) or getattr(msg, "type", "") == "human" or getattr(msg, "role", "") == "user":
+                last_user_message = getattr(msg, "content", str(msg))
+                if last_user_message:
+                    break
+        if not last_user_message and messages:
+            last_user_message = getattr(messages[-1], "content", str(messages[-1]))
 
         symptoms_knowledge = load_json_file(self.knowledge_base_path, default=[])
         user_text = last_user_message.lower()

@@ -53,6 +53,18 @@ class ReflectionNode:
         return text
 
     def validate_response(self, state: AgentState) -> Dict[str, Any]:
+        # ── Pass-through for general/greeting responses ─────────────────────────
+        # General agent sets final_response directly; no medical disclaimer needed
+        current_intent = state.get("current_intent", "")
+        if current_intent == "general":
+            existing = state.get("final_response", "")
+            if existing:
+                return {
+                    "final_response": self._sanitize(existing),
+                    "is_safe": True,
+                    "reflection_feedback": "General conversation — no clinical review needed.",
+                }
+
         agent_outputs = state.get("agent_outputs", {})
 
         # Determine which output to use (skip internal signals like 'appointment_pending')

@@ -52,10 +52,13 @@ class MedicationAgent:
         messages = state.get("messages", [])
         last_user_message = ""
         for msg in reversed(messages):
-            content = getattr(msg, "content", str(msg))
-            if content:
-                last_user_message = content
-                break
+            from langchain_core.messages import HumanMessage
+            if isinstance(msg, HumanMessage) or getattr(msg, "type", "") == "human" or getattr(msg, "role", "") == "user":
+                last_user_message = getattr(msg, "content", str(msg))
+                if last_user_message:
+                    break
+        if not last_user_message and messages:
+            last_user_message = getattr(messages[-1], "content", str(messages[-1]))
 
         patient_id = state.get("patient_id", "PAT8801")
 

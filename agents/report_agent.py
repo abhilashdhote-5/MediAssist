@@ -31,18 +31,59 @@ class ReportAgent:
         messages = state.get("messages", [])
         last_user_message = ""
         for msg in reversed(messages):
-            content = getattr(msg, "content", str(msg))
-            if content:
-                last_user_message = content
-                break
+            from langchain_core.messages import HumanMessage
+            if isinstance(msg, HumanMessage) or getattr(msg, "type", "") == "human" or getattr(msg, "role", "") == "user":
+                last_user_message = getattr(msg, "content", str(msg))
+                if last_user_message:
+                    break
+        if not last_user_message and messages:
+            last_user_message = getattr(messages[-1], "content", str(messages[-1]))
 
         patient_id = state.get("patient_id", "PAT8801")
+        pdf_context = state.get("pdf_context", "")
 
-        # Try to extract a specific report ID from the message
+        # Check if RAG PDF context is provided for uploaded lab reports
+        if pdf_context and pdf_context.strip():
+            output_text = ""
+            if self.llm:
+                try:
+                    from langchain_core.messages import SystemMessage, HumanMessage
+                    prompt_input = (
+                        f"Patient Query: {last_user_message}\n\n"
+                        f"EXTRACTED LAB REPORT RAG CONTEXT:\n{pdf_context}\n\n"
+                        "Instructions:\n"
+                        "1. Extract key health parameters/metrics, their values, units, and reference ranges found in the context.\n"
+                        "2. Rely on your inherent medical knowledge to evaluate the metrics and highlight any values that are out of bounds (HIGH or LOW) or abnormal.\n"
+                        "3. Present the results in a clean structured format with clear headings and bullet points.\n"
+                        "4. If information is missing or unclear, state 'I don't know based on the provided report context' rather than guessing."
+                    )
+                    res = self.llm.invoke([
+                        SystemMessage(content=self.system_prompt),
+                        HumanMessage(content=prompt_input)
+                    ])
+                    if res and res.content:
+                        output_text = str(res.content)
+                except Exception as e:
+                    print(f"Report Agent RAG LLM call fallback: {e}")
+
+            if not output_text:
+                output_text = (
+                    f"### 📋 Uploaded Lab Report Analysis\n\n"
+                    f"**Extracted Content Preview:**\n{pdf_context[:500]}...\n\n"
+                    f"Please consult a physician to review these laboratory results in detail."
+                )
+
+            agent_outputs = state.get("agent_outputs", {})
+            agent_outputs["report_explanation"] = output_text
+            return {
+                "agent_outputs": agent_outputs,
+                "next_node": "reflection_node",
+            }
+
+        # Otherwise, process structured report database entries
         report = None
         user_upper = last_user_message.upper()
         if "REP" in user_upper:
-            # Parse report ID from message like "explain REP5003"
             import re
             match = re.search(r"REP\d+", user_upper)
             if match:
@@ -54,7 +95,7 @@ class ReportAgent:
         if "error" in report:
             output_text = (
                 f"### 📋 Medical Report\n\nNo lab reports found for patient {patient_id}. "
-                "Please upload your report or provide a report ID."
+                "Please upload your medical report PDF using the upload button beside the chatbox."
             )
         else:
             lab_results = report.get("lab_results", [])

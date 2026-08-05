@@ -15,3 +15,4 @@ class AgentState(TypedDict):
     final_response: str
     is_safe: bool
     reflection_feedback: str
+    pdf_context: str
