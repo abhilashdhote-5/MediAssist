@@ -1,10 +1,14 @@
+import io
+import os
 import re
 from datetime import datetime
 import streamlit as st
+import streamlit.components.v1 as components
 from langchain_core.messages import HumanMessage, AIMessage
 from graph import build_mediassist_graph
 from utils.helpers import load_json_file
 from tools.appointment_tool import AppointmentTool
+from tools.doctor_lookup import DoctorLookupTool
 
 # ─── Page Configuration ────────────────────────────────────────────────────────
 st.set_page_config(
@@ -189,7 +193,6 @@ st.markdown("""
         padding: 0 24px;
     }
 
-    /* Sticky Static Header Container */
     .sticky-header-container {
         position: sticky;
         top: 0;
@@ -361,7 +364,7 @@ st.markdown("""
     }
 
     /* ══════════════════════════════════════
-       BOTTOM INPUT BAR — merged pill w/ attach on the LEFT
+       BOTTOM INPUT BAR & EMBEDDED TOOLBAR
     ══════════════════════════════════════ */
     html body [data-testid="stBottom"],
     html body [data-testid="stBottom"] > div {
@@ -672,6 +675,9 @@ def render_hitl_confirmation():
     if not pending:
         return
 
+    # Ensure we have a patient id available for widget keys and lookups
+    patient_id = pending.get("patient_id") or st.session_state.get("current_patient_id")
+
     action     = pending.get("action", "book").capitalize()
     doctor     = pending.get("doctor_name", "Unknown Doctor")
     specialty  = pending.get("specialty", "")
@@ -684,7 +690,6 @@ def render_hitl_confirmation():
     currency   = pending.get("currency", "USD")
     days_str   = ", ".join(avail_days) if avail_days else "All Week"
 
-    # Strict Date Parsing for DateInput Default Value
     try:
         default_date = datetime.strptime(date_str, "%Y-%m-%d").date()
     except (ValueError, TypeError):
@@ -700,6 +705,47 @@ def render_hitl_confirmation():
         <div class="hitl-detail-row"><b>Available Days:</b> {days_str} &nbsp;|&nbsp; <b>Consultation Fee:</b> {currency} {fee}</div>
     </div>
     """, unsafe_allow_html=True)
+
+    # Allow the user to pick from matching doctors (HITL)
+    available_doctors = pending.get("available_doctors", [])
+    chosen_doctor = None
+    # Offer an option to expand to the full doctor directory
+    show_all_key = f"hitl_show_all_{patient_id}"
+    try:
+        show_all = st.checkbox("Show all doctors", key=show_all_key)
+    except Exception:
+        show_all = False
+
+    if show_all:
+        # Load the full doctor directory
+        all_docs = DoctorLookupTool().search_doctors()
+        if all_docs:
+            available_doctors = all_docs
+
+    # Text filter to help patients find a doctor quickly
+    filter_key = f"hitl_filter_{patient_id}"
+    filter_text = st.text_input("Filter doctors by name or specialty", key=filter_key)
+    filtered_docs = available_doctors
+    if filter_text:
+        ft = filter_text.strip().lower()
+        filtered_docs = [d for d in available_doctors if ft in d.get("full_name", "").lower() or ft in d.get("specialty", "").lower() or ft in d.get("qualification", "").lower()]
+
+    if filtered_docs:
+        doc_labels = {d["doctor_id"]: f"{d.get('full_name')} — {d.get('qualification','')} ({d.get('currency','')}{d.get('consultation_fee',0)})" for d in filtered_docs}
+        doc_options = [d["doctor_id"] for d in filtered_docs]
+        # Use radio for clearer single-choice selection and better visibility
+        chosen_doc_id = st.radio(
+            "👨‍⚕️ Choose preferred doctor",
+            options=doc_options,
+            format_func=lambda did: doc_labels.get(did, did),
+            key=f"hitl_doctor_{patient_id}",
+        )
+        chosen_doctor = next((d for d in filtered_docs if d.get("doctor_id") == chosen_doc_id), None)
+        if chosen_doctor:
+            doctor = chosen_doctor.get("full_name", doctor)
+            # Update available slots/days to reflect chosen doctor
+            avail_slots = chosen_doctor.get("available_slots", avail_slots)
+            avail_days = chosen_doctor.get("available_days", avail_days)
 
     col_slot, col_date = st.columns(2)
     with col_slot:
@@ -735,9 +781,11 @@ def render_hitl_confirmation():
                     result = tool.reschedule_appointment(scheduled[0]["appointment_id"], chosen_date, chosen_slot) \
                              if scheduled else {"status": "Error", "message": "No appointment to reschedule."}
                 else:
+                    # If user selected a different doctor in HITL, use that doctor's id
+                    doctor_id_to_book = (chosen_doctor.get("doctor_id") if chosen_doctor else pending.get("doctor_id", "DOC001"))
                     result = tool.book_appointment(
                         patient_id=pending["patient_id"],
-                        doctor_id=pending.get("doctor_id", "DOC001"),
+                        doctor_id=doctor_id_to_book,
                         date=chosen_date,
                         time_slot=chosen_slot,
                         reason="Patient requested via MediAssist AI",
@@ -866,7 +914,7 @@ def process_user_message(prompt: str):
                 st.error(f"LangGraph error: {str(e)}")
 
 
-# ─── PDF Upload toolbar (sits in body just above the fixed bottom bar) ─────────
+# ─── PDF Upload Popover Toolbar ─────────────────────────────────────────────────
 if not curr_session.get("hitl_pending"):
     with st.container():
         attach_col, spacer = st.columns([1, 20])
@@ -905,12 +953,137 @@ if not curr_session.get("hitl_pending"):
                                 st.error(f"Failed: {res.get('message')}")
 
 
-# ─── Fixed Bottom Chat Input ────────────────────────────────────────────────────
+# ─── Fixed Bottom Chat Input with Injected Voice Button ─────────────────────────
 if curr_session.get("hitl_pending"):
     st.info("⏳ Please **confirm or decline** the appointment above before sending a new message.")
 else:
+    # 1. Native Streamlit Chat Input Box
     chat_prompt = st.chat_input("Ask MediAssist AI anything about your health...")
 
+    # 2. Injected Browser-Native Web Speech Voice Button attached to the prompt palette
+    voice_component = """
+    <div id="mic-wrapper" style="display:flex;align-items:center;gap:8px;">
+      <button id="mic-btn" aria-label="Start voice input" title="Click to Speak" style="
+            background: linear-gradient(135deg,#FF0080,#FF6B7A);
+            border: none;
+            color: #fff;
+            width: 44px; height:44px; border-radius: 50%;
+            display:flex;align-items:center;justify-content:center;cursor:pointer;
+            box-shadow:0 8px 24px rgba(255,107,122,0.18);outline:none;">
+            <svg id="mic-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+            </svg>
+      </button>
+      <div id="mic-status" style="color:#C4B4FF;font-size:0.85rem;display:none;">Listening...</div>
+    </div>
+
+    <script>
+    (function(){
+        const parentDoc = window.parent.document;
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+            // Hide if not supported
+            return;
+        }
+
+        const recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = true;
+        recognition.lang = 'en-US';
+
+        // Try to locate the chat input container and textarea (robust selectors)
+        const chatContainer = parentDoc.querySelector('[data-testid="stChatInput"]');
+        let textarea = null;
+        if (chatContainer) {
+            textarea = chatContainer.querySelector('textarea');
+        }
+        if (!textarea) {
+            textarea = parentDoc.querySelector('textarea');
+        }
+
+        // Create or move the mic button into the chat container if available
+        const wrapper = document.getElementById('mic-wrapper');
+        const micBtn = document.getElementById('mic-btn');
+        const micStatus = document.getElementById('mic-status');
+
+        if (chatContainer) {
+            // append wrapper at the end of chat input palette
+            chatContainer.style.position = 'relative';
+            chatContainer.appendChild(wrapper);
+            wrapper.style.position = 'absolute';
+            wrapper.style.right = '12px';
+            wrapper.style.top = '50%';
+            wrapper.style.transform = 'translateY(-50%)';
+            wrapper.style.zIndex = 9999;
+        } else {
+            // fallback: attach to body bottom-right
+            wrapper.style.position = 'fixed';
+            wrapper.style.bottom = '28px';
+            wrapper.style.right = '24px';
+            wrapper.style.zIndex = 99999;
+            document.body.appendChild(wrapper);
+        }
+
+        let isRecording = false;
+
+        micBtn.addEventListener('click', () => {
+            if (!isRecording) {
+                recognition.start();
+            } else {
+                recognition.stop();
+            }
+        });
+
+        recognition.onstart = () => {
+            isRecording = true;
+            micStatus.style.display = 'block';
+            micBtn.style.transform = 'scale(1.06)';
+        };
+
+        recognition.onend = () => {
+            isRecording = false;
+            micStatus.style.display = 'none';
+            micBtn.style.transform = 'scale(1)';
+        };
+
+        recognition.onerror = (ev) => {
+            console.warn('Speech recognition error', ev);
+            recognition.stop();
+        };
+
+        recognition.onresult = (event) => {
+            const results = event.results;
+            let interim = '';
+            let finalTranscript = '';
+            for (let i = 0; i < results.length; i++) {
+                const res = results[i];
+                if (res.isFinal) {
+                    finalTranscript += res[0].transcript;
+                } else {
+                    interim += res[0].transcript;
+                }
+            }
+            const textToShow = (finalTranscript + (interim ? (finalTranscript ? ' ' : '') + interim : '')).trim();
+            if (textarea) {
+                textarea.value = textToShow;
+                textarea.dispatchEvent(new Event('input', { bubbles: true }));
+                textarea.focus();
+            } else {
+                // As a fallback, place text into the first input found
+                const anyInput = parentDoc.querySelector('input, textarea');
+                if (anyInput) {
+                    anyInput.value = textToShow;
+                    anyInput.dispatchEvent(new Event('input', { bubbles: true }));
+                }
+            }
+        };
+    })();
+    </script>
+    """
+    components.html(voice_component, height=1, width=0)
+
+    # 3. Process submitted prompt
     final_prompt = None
     if st.session_state.get("queued_prompt"):
         final_prompt = st.session_state.queued_prompt

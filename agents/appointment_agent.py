@@ -53,11 +53,27 @@ class AppointmentAgent:
                 break
 
         # Find matching doctors from real data
+        # Gather matching doctors (preserve full list for HITL selection)
         doctors = self.doctor_tool.search_doctors(specialty=specialty)
         if not doctors:
             doctors = self.doctor_tool.search_doctors()
 
+        # Build a conservative default selection (first match) but keep full list
         selected_doctor = doctors[0] if doctors else {}
+
+        # Normalize doctor dicts for UI consumption
+        available_doctors = []
+        for d in doctors:
+            available_doctors.append({
+                "doctor_id": d.get("doctor_id", "DOC001"),
+                "full_name": d.get("full_name", "General Physician"),
+                "qualification": d.get("qualification", "MBBS"),
+                "experience_years": d.get("experience_years", 0),
+                "consultation_fee": d.get("consultation_fee", 0),
+                "currency": d.get("currency", "USD"),
+                "available_slots": d.get("available_slots", ["09:00 AM", "11:30 AM", "02:00 PM"]),
+                "available_days": d.get("available_days", []),
+            })
 
         return {
             "action": action,
@@ -68,12 +84,14 @@ class AppointmentAgent:
             "experience_years": selected_doctor.get("experience_years", 0),
             "consultation_fee": selected_doctor.get("consultation_fee", 0),
             "currency": selected_doctor.get("currency", "USD"),
-            "available_slots": selected_doctor.get("available_slots", ["09:00 AM", "11:30 AM", "02:00 PM"]),
+            "available_slots": selected_doctor.get("available_slots", ["09:00 AM"]),
             "available_days": selected_doctor.get("available_days", []),
             "date": "2026-08-10",
             "time_slot": selected_doctor.get("available_slots", ["09:00 AM"])[0],
             "patient_id": patient_id,
             "patient_name": self._get_patient_name(patient_id),
+            # expose full doctor list for UI HITL
+            "available_doctors": available_doctors,
         }
 
     def process_appointment(self, state: AgentState) -> Dict[str, Any]:
@@ -106,6 +124,8 @@ class AppointmentAgent:
             "consultation_fee": details["consultation_fee"],
             "currency": details["currency"],
         }
+        # Include the full list of matching doctors for HITL selection
+        pending_action["available_doctors"] = details.get("available_doctors", [])
 
         # Signal to UI that HITL confirmation is needed
         agent_outputs = state.get("agent_outputs", {})
