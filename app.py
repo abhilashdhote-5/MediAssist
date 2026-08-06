@@ -729,17 +729,18 @@ if chat_is_empty:
     )
 
     # Quick Actions
-    qa_col1, qa_col2, qa_col3, qa_col4 = st.columns(4)
+    qa_col1, qa_col2, qa_col3, qa_col4, qa_col5 = st.columns(5)
     quick_actions = [
-        (qa_col1, "📅", "Book Appointment", "I'd like to book a doctor's appointment.", "qa-appt"),
-        (qa_col2, "🩺", "Check Symptoms", "I've been feeling unwell, can you help me understand my symptoms?", "qa-symp"),
-        (qa_col3, "💊", "Medication Info", "Can you tell me about my current medications and possible interactions?", "qa-med"),
-        (qa_col4, "📋", "Analyze Report", "I want to upload and analyze my lab report.", "qa-report"),
+        (qa_col1, "📅", "Book", "I'd like to book a doctor's appointment.", "qa-appt"),
+        (qa_col2, "❌", "Cancel / Delete", "I want to cancel or delete an appointment.", "qa-cancel"),
+        (qa_col3, "🩺", "Symptoms", "I've been feeling unwell, can you help me understand my symptoms?", "qa-symp"),
+        (qa_col4, "💊", "Medication", "Can you tell me about my current medications and possible interactions?", "qa-med"),
+        (qa_col5, "📋", "Lab Report", "I want to upload and analyze my lab report.", "qa-report"),
     ]
     for col, icon, label, prompt_text, key in quick_actions:
         with col:
             st.markdown('<div class="qa-btn">', unsafe_allow_html=True)
-            if st.button(f"{icon}  {label}", key=key, use_container_width=True):
+            if st.button(f"{icon} {label}", key=key, use_container_width=True):
                 st.session_state.queued_prompt = prompt_text
                 st.rerun()
             st.markdown("</div>", unsafe_allow_html=True)
@@ -775,185 +776,228 @@ if pending:
     currency = pending.get("currency", "USD")
     days_str = ", ".join(avail_days) if avail_days else "All Week"
 
-    try:
-        default_date = datetime.strptime(date_str, "%Y-%m-%d").date()
-    except (ValueError, TypeError):
-        default_date = datetime.now().date()
+    tool = AppointmentTool()
+    existing_appts = tool.list_appointments(patient_id=patient_id)
 
     with st.container(border=True):
-        st.warning(f"📋 Confirm Appointment — {action}")
+        st.warning(f"📋 Manage Appointment — {action}")
         st.caption(
             f"Patient: {patient_nm} · Doctor: {doctor} ({specialty}) · Available: {days_str} · Fee: {currency} {fee}"
         )
 
-        # Doctor selection
-        available_doctors = pending.get("available_doctors", [])
-        chosen_doctor = None
+        if action.lower() in ("cancel", "delete"):
+            if existing_appts:
+                appt_options = {
+                    f"{a.get('appointment_id')} — {a.get('doctor_name')} ({a.get('appointment_date')} @ {a.get('time_slot')}) [{a.get('status')}]": a.get('appointment_id')
+                    for a in existing_appts
+                }
+                selected_label = st.selectbox(
+                    "Select appointment to manage",
+                    options=list(appt_options.keys()),
+                    key=f"hitl_cancel_select_{patient_id}"
+                )
+                target_appt_id = appt_options.get(selected_label, existing_appts[0].get("appointment_id"))
+            else:
+                st.info("No active appointments found for this patient.")
+                target_appt_id = None
 
-        show_all_key = f"hitl_show_all_{patient_id}"
-        try:
-            show_all = st.checkbox("Show all doctors", key=show_all_key)
-        except Exception:
-            show_all = False
+            col_cancel_act, col_delete_act, col_decl = st.columns(3)
+            with col_cancel_act:
+                if st.button("❌ Mark Cancelled", type="primary", use_container_width=True, disabled=not target_appt_id):
+                    res = tool.cancel_appointment(target_appt_id)
+                    if res.get("status") == "Success":
+                        msg = f"❌ **Appointment `{target_appt_id}` has been Cancelled.**"
+                        st.toast("Appointment cancelled!", icon="ℹ️")
+                    else:
+                        msg = f"Failed to cancel: {res.get('message')}"
+                    curr_session["chat_history"].append({
+                        "role": "assistant",
+                        "content": msg,
+                        "agent_info": "Appointment Agent (Cancelled)"
+                    })
+                    curr_session["hitl_pending"] = None
+                    st.rerun()
 
-        if show_all:
-            all_docs = DoctorLookupTool().search_doctors()
-            if all_docs:
-                available_doctors = all_docs
+            with col_delete_act:
+                if st.button("🗑️ Delete Permanently", use_container_width=True, disabled=not target_appt_id):
+                    res = tool.delete_appointment(target_appt_id)
+                    if res.get("status") == "Success":
+                        msg = f"🗑️ **Appointment `{target_appt_id}` has been permanently deleted.**"
+                        st.toast("Appointment deleted!", icon="🧹")
+                    else:
+                        msg = f"Failed to delete: {res.get('message')}"
+                    curr_session["chat_history"].append({
+                        "role": "assistant",
+                        "content": msg,
+                        "agent_info": "Appointment Agent (Deleted)"
+                    })
+                    curr_session["hitl_pending"] = None
+                    st.rerun()
 
-        filter_key = f"hitl_filter_{patient_id}"
-        filter_text = st.text_input(
-            "Filter doctors by name or specialty", key=filter_key
-        )
-        filtered_docs = available_doctors
-        if filter_text:
-            ft = filter_text.strip().lower()
-            filtered_docs = [
-                d
-                for d in available_doctors
-                if ft in d.get("full_name", "").lower()
-                or ft in d.get("specialty", "").lower()
-                or ft in d.get("qualification", "").lower()
-            ]
+            with col_decl:
+                if st.button("✕ Keep Appointment", use_container_width=True):
+                    curr_session["chat_history"].append({
+                        "role": "assistant",
+                        "content": "No changes were made to your appointment.",
+                        "agent_info": "Appointment Agent",
+                    })
+                    curr_session["hitl_pending"] = None
+                    st.rerun()
 
-        if filtered_docs:
-            doc_labels = {
-                d["doctor_id"]: f"{d.get('full_name')} — {d.get('qualification', '')} ({d.get('currency', '')}{d.get('consultation_fee', 0)})"
-                for d in filtered_docs
-            }
-            doc_options = [d["doctor_id"] for d in filtered_docs]
-            chosen_doc_id = st.radio(
-                "👨‍⚕️ Choose preferred doctor",
-                options=doc_options,
-                format_func=lambda did: doc_labels.get(did, did),
-                key=f"hitl_doctor_{patient_id}",
+        else:
+            # Booking / Rescheduling flow
+            available_doctors = pending.get("available_doctors", [])
+            chosen_doctor = None
+
+            show_all_key = f"hitl_show_all_{patient_id}"
+            try:
+                show_all = st.checkbox("Show all doctors", key=show_all_key)
+            except Exception:
+                show_all = False
+
+            if show_all:
+                all_docs = DoctorLookupTool().search_doctors()
+                if all_docs:
+                    available_doctors = all_docs
+
+            filter_key = f"hitl_filter_{patient_id}"
+            filter_text = st.text_input(
+                "Filter doctors by name or specialty", key=filter_key
             )
-            chosen_doctor = next(
-                (d for d in filtered_docs if d.get("doctor_id") == chosen_doc_id),
-                None,
-            )
-            if chosen_doctor:
-                doctor = chosen_doctor.get("full_name", doctor)
-                avail_slots = chosen_doctor.get("available_slots", avail_slots)
-                avail_days = chosen_doctor.get("available_days", avail_days)
+            filtered_docs = available_doctors
+            if filter_text:
+                ft = filter_text.strip().lower()
+                filtered_docs = [
+                    d
+                    for d in available_doctors
+                    if ft in d.get("full_name", "").lower()
+                    or ft in d.get("specialty", "").lower()
+                    or ft in d.get("qualification", "").lower()
+                ]
 
-        col_slot, col_date = st.columns(2)
-        with col_slot:
-            chosen_slot = st.selectbox(
-                "⏰ Choose time slot",
-                options=avail_slots if avail_slots else [time_slot],
-                key=f"hitl_slot_{st.session_state.current_patient_id}",
-            )
-        with col_date:
-            chosen_date_obj = st.date_input(
-                "📅 Appointment date",
-                value=default_date,
-                min_value=datetime.now().date(),
-                key=f"hitl_date_{st.session_state.current_patient_id}",
-            )
-            chosen_date = chosen_date_obj.strftime("%Y-%m-%d")
+            if filtered_docs:
+                doc_labels = {
+                    d["doctor_id"]: f"{d.get('full_name')} — {d.get('qualification', '')} ({d.get('currency', '')}{d.get('consultation_fee', 0)})"
+                    for d in filtered_docs
+                }
+                doc_options = [d["doctor_id"] for d in filtered_docs]
+                chosen_doc_id = st.radio(
+                    "👨‍⚕️ Choose preferred doctor",
+                    options=doc_options,
+                    format_func=lambda did: doc_labels.get(did, did),
+                    key=f"hitl_doctor_{patient_id}",
+                )
+                chosen_doctor = next(
+                    (d for d in filtered_docs if d.get("doctor_id") == chosen_doc_id),
+                    None,
+                )
+                if chosen_doctor:
+                    doctor = chosen_doctor.get("full_name", doctor)
+                    avail_slots = chosen_doctor.get("available_slots", avail_slots)
+                    avail_days = chosen_doctor.get("available_days", avail_days)
 
-        is_date_valid = bool(chosen_date_obj >= datetime.now().date())
+            col_slot, col_date = st.columns(2)
+            with col_slot:
+                chosen_slot = st.selectbox(
+                    "⏰ Choose time slot",
+                    options=avail_slots if avail_slots else [time_slot],
+                    key=f"hitl_slot_{st.session_state.current_patient_id}",
+                )
+            with col_date:
+                try:
+                    default_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+                except (ValueError, TypeError):
+                    default_date = datetime.now().date()
 
-        col_confirm, col_cancel = st.columns(2)
-        with col_confirm:
-            if st.button(
-                "✅ Confirm Appointment",
-                type="primary",
-                use_container_width=True,
-                disabled=not is_date_valid,
-            ):
-                with st.spinner("Processing..."):
-                    tool = AppointmentTool()
-                    if action.lower() == "cancel":
-                        appts = tool.list_appointments(
-                            patient_id=pending["patient_id"]
-                        )
-                        scheduled = [
-                            a for a in appts if a.get("status") == "Scheduled"
-                        ]
-                        result = (
-                            tool.cancel_appointment(scheduled[0]["appointment_id"])
-                            if scheduled
-                            else {
-                                "status": "Error",
-                                "message": "No scheduled appointment found.",
-                            }
-                        )
-                    elif action.lower() == "reschedule":
-                        appts = tool.list_appointments(
-                            patient_id=pending["patient_id"]
-                        )
-                        scheduled = [
-                            a
-                            for a in appts
-                            if a.get("status") in ("Scheduled", "Rescheduled")
-                        ]
-                        result = (
-                            tool.reschedule_appointment(
-                                scheduled[0]["appointment_id"],
-                                chosen_date,
-                                chosen_slot,
+                chosen_date_obj = st.date_input(
+                    "📅 Appointment date",
+                    value=default_date,
+                    min_value=datetime.now().date(),
+                    key=f"hitl_date_{st.session_state.current_patient_id}",
+                )
+                chosen_date = chosen_date_obj.strftime("%Y-%m-%d")
+
+            is_date_valid = bool(chosen_date_obj >= datetime.now().date())
+
+            col_confirm, col_cancel = st.columns(2)
+            with col_confirm:
+                if st.button(
+                    "✅ Confirm Appointment",
+                    type="primary",
+                    use_container_width=True,
+                    disabled=not is_date_valid,
+                ):
+                    with st.spinner("Processing..."):
+                        if action.lower() == "reschedule":
+                            scheduled = [
+                                a
+                                for a in existing_appts
+                                if a.get("status") in ("Scheduled", "Rescheduled")
+                            ]
+                            result = (
+                                tool.reschedule_appointment(
+                                    scheduled[0]["appointment_id"],
+                                    chosen_date,
+                                    chosen_slot,
+                                )
+                                if scheduled
+                                else {
+                                    "status": "Error",
+                                    "message": "No appointment to reschedule.",
+                                }
                             )
-                            if scheduled
-                            else {
-                                "status": "Error",
-                                "message": "No appointment to reschedule.",
+                        else:
+                            doctor_id_to_book = (
+                                chosen_doctor.get("doctor_id")
+                                if chosen_doctor
+                                else pending.get("doctor_id", "DOC001")
+                            )
+                            result = tool.book_appointment(
+                                patient_id=pending["patient_id"],
+                                doctor_id=doctor_id_to_book,
+                                date=chosen_date,
+                                time_slot=chosen_slot,
+                                reason="Patient requested via MediAssist AI",
+                                patient_name=patient_nm,
+                                doctor_name=doctor,
+                            )
+
+                        if result.get("status") == "Success":
+                            appt = result.get("appointment", {})
+                            confirm_msg = (
+                                f"✅ **Appointment {action}d Successfully!**\n\n"
+                                f"**ID:** `{appt.get('appointment_id', 'N/A')}`  |  "
+                                f"**Doctor:** {appt.get('doctor_name', doctor)}\n"
+                                f"**Date:** {appt.get('appointment_date', chosen_date)}  |  "
+                                f"**Time:** {appt.get('time_slot', chosen_slot)}\n"
+                                f"**Status:** {appt.get('status', 'Confirmed')}"
+                            )
+                            st.toast("Appointment confirmed!", icon="🎉")
+                        else:
+                            confirm_msg = f"❌ **{action} Failed:** {result.get('message', 'Unknown error.')}"
+                            st.toast("Action failed.", icon="❌")
+
+                        curr_session["chat_history"].append(
+                            {
+                                "role": "assistant",
+                                "content": confirm_msg,
+                                "agent_info": "Appointment Agent (Confirmed)",
                             }
                         )
-                    else:
-                        doctor_id_to_book = (
-                            chosen_doctor.get("doctor_id")
-                            if chosen_doctor
-                            else pending.get("doctor_id", "DOC001")
-                        )
-                        result = tool.book_appointment(
-                            patient_id=pending["patient_id"],
-                            doctor_id=doctor_id_to_book,
-                            date=chosen_date,
-                            time_slot=chosen_slot,
-                            reason="Patient requested via MediAssist AI",
-                            patient_name=patient_nm,
-                            doctor_name=doctor,
-                        )
+                        curr_session["hitl_pending"] = None
+                        st.rerun()
 
-                    if result.get("status") == "Success":
-                        appt = result.get("appointment", {})
-                        confirm_msg = (
-                            f"✅ **Appointment {action}d Successfully!**\n\n"
-                            f"**ID:** `{appt.get('appointment_id', 'N/A')}`  |  "
-                            f"**Doctor:** {appt.get('doctor_name', doctor)}\n"
-                            f"**Date:** {appt.get('appointment_date', chosen_date)}  |  "
-                            f"**Time:** {appt.get('time_slot', chosen_slot)}\n"
-                            f"**Status:** {appt.get('status', 'Confirmed')}"
-                        )
-                        st.toast("Appointment confirmed!", icon="🎉")
-                    else:
-                        confirm_msg = f"❌ **{action} Failed:** {result.get('message', 'Unknown error.')}"
-                        st.toast("Action failed.", icon="❌")
-
+            with col_cancel:
+                if st.button("✕ Decline", use_container_width=True):
                     curr_session["chat_history"].append(
                         {
                             "role": "assistant",
-                            "content": confirm_msg,
-                            "agent_info": "Appointment Agent (Confirmed)",
+                            "content": "Appointment action was **declined**. No changes were made to your records.",
+                            "agent_info": "Appointment Agent (Declined)",
                         }
                     )
                     curr_session["hitl_pending"] = None
                     st.rerun()
-
-        with col_cancel:
-            if st.button("✕ Decline", use_container_width=True):
-                curr_session["chat_history"].append(
-                    {
-                        "role": "assistant",
-                        "content": "Appointment action was **declined**. No changes were made to your records.",
-                        "agent_info": "Appointment Agent (Declined)",
-                    }
-                )
-                curr_session["hitl_pending"] = None
-                st.toast("Declined.", icon="ℹ️")
-                st.rerun()
 
 # ─── PDF Banner ────────────────────────────────────────────────────────────────
 if curr_session.get("uploaded_pdf_name"):

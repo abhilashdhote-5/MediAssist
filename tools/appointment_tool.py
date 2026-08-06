@@ -131,6 +131,21 @@ class AppointmentTool:
                 }
         return {"status": "Error", "message": f"Appointment {appointment_id} not found."}
 
+    def delete_appointment(self, appointment_id: str) -> Dict:
+        """Permanently deletes an appointment record by ID."""
+        appointments = self._load_appointments()
+        initial_count = len(appointments)
+        deleted_appt = next((a for a in appointments if a.get("appointment_id") == appointment_id), None)
+        appointments = [a for a in appointments if a.get("appointment_id") != appointment_id]
+        if len(appointments) < initial_count:
+            self._save_appointments(appointments)
+            return {
+                "status": "Success",
+                "message": f"Appointment {appointment_id} has been permanently deleted.",
+                "appointment": deleted_appt or {"appointment_id": appointment_id},
+            }
+        return {"status": "Error", "message": f"Appointment {appointment_id} not found."}
+
     def reschedule_appointment(
         self, appointment_id: str, new_date: str, new_time_slot: str
     ) -> Dict:

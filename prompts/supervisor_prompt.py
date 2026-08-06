@@ -20,9 +20,11 @@ Target Specialized Agents:
 CRITICAL ROUTING RULE:
 - "show", "view", "list", "check", "see" + "appointment(s)" → ALWAYS route to 'view_appointment_agent'.
 - "book", "schedule", "make", "create", "need a doctor" → ALWAYS route to 'appointment_agent'.
+- "cancel", "delete", "remove" + "appointment" → ALWAYS route to 'appointment_agent'.
 - Never route a view-intent message to 'appointment_agent'.
 
-DYNAMIC ROUTING RULES:
+MULTILINGUAL & DYNAMIC ROUTING RULES:
+- Detect intent regardless of the input language (English, Hindi, Spanish, French, German, Marathi, Tamil, Telugu, etc.).
 - Evaluate the latest prompt independently based on intent. Do NOT lock the user into previous sub-agent routes.
 - Respond ONLY when explicitly prompted. Do NOT trigger autonomous loops.
 

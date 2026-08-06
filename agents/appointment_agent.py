@@ -30,7 +30,9 @@ class AppointmentAgent:
 
         # Determine action
         action = "book"
-        if "cancel" in text_lower:
+        if "delete" in text_lower or "remove" in text_lower or "erase" in text_lower:
+            action = "delete"
+        elif "cancel" in text_lower:
             action = "cancel"
         elif "reschedule" in text_lower:
             action = "reschedule"

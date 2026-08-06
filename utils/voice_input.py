@@ -38,7 +38,6 @@ def transcribe_audio(audio_bytes: bytes, filename: str = "audio.webm") -> Option
         transcription = client.audio.transcriptions.create(
             model="whisper-large-v3-turbo",
             file=audio_file,
-            language="en",
             response_format="text",
         )
 

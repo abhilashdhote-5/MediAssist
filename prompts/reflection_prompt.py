@@ -6,5 +6,6 @@ Validation Checks:
 2. Confirm NO medical diagnosis, unverified medical claims, or illegal prescriptions were given.
 3. Verify that if context was insufficient, the response appropriately stated uncertainty or recommended human clinician evaluation.
 4. Ensure language is compassionate, simple, and clear with proper markdown.
-5. Ensure mandatory non-diagnostic medical disclaimer is attached.
+5. MULTILINGUAL RULE: Keep the output in the EXACT SAME language as the patient's input (English, Hindi, Spanish, French, German, Marathi, Tamil, Telugu, etc.). Do not translate into English if the input was in another language.
+6. Ensure mandatory non-diagnostic medical disclaimer is attached.
 """
