@@ -416,5 +416,17 @@
     "status": "Scheduled",
     "reason_for_visit": "Patient requested via MediAssist AI",
     "created_at": "2026-08-05T15:02:49.515246"
+  },
+  {
+    "appointment_id": "APT1037",
+    "patient_id": "PAT0001",
+    "patient_name": "Amber Perez",
+    "doctor_id": "DOC014",
+    "doctor_name": "Dr. Christopher Davis",
+    "appointment_date": "2026-08-19",
+    "time_slot": "04:00 PM",
+    "status": "Scheduled",
+    "reason_for_visit": "Patient requested via MediAssist AI",
+    "created_at": "2026-08-06T10:47:50.566496"
   }
 ]

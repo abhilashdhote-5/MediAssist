@@ -1,9 +1,8 @@
 import io
 import os
-import re
+import hashlib
 from datetime import datetime
 import streamlit as st
-import streamlit.components.v1 as components
 from langchain_core.messages import HumanMessage, AIMessage
 from graph import build_mediassist_graph
 from utils.helpers import load_json_file
@@ -14,562 +13,579 @@ from tools.doctor_lookup import DoctorLookupTool
 st.set_page_config(
     page_title="MediAssist AI",
     page_icon="⚕",
-    layout="wide",
-    initial_sidebar_state="expanded"
+    layout="centered",
 )
 
 # ─── Global Design System & Custom CSS ─────────────────────────────────────────
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
 
-    /* ── Design Tokens (Soft Powder Blue & Sky Blue theme with Peach/Cream accents) ── */
-    :root {
-        --bg:            #BFDDF0;
-        --bg-glow-a:     #8CC0EB;
-        --bg-glow-b:     #FFEBCC;
-        --surface:       #D2E6F5;
-        --surface-2:     #EBF4FB;
-        --surface-3:     #FFFFFF;
-        --border:        rgba(140, 192, 235, 0.45);
-        --border-md:     #8CC0EB;
-        --border-strong: #5296CC;
-        --accent:        #8CC0EB;
-        --accent-2:      #5296CC;
-        --accent-dim:    rgba(140, 192, 235, 0.30);
-        --accent-glow:   rgba(140, 192, 235, 0.50);
-        --cream:         #FFF9D2;
-        --peach:         #FFEBCC;
-        --teal:          #1F7199;
-        --teal-dim:      rgba(140, 192, 235, 0.25);
-        --green:         #169B62;
-        --green-dim:     rgba(22, 155, 98, 0.15);
-        --amber:         #D97706;
-        --red:           #E11D48;
-        --text-1:        #0C2336;
-        --text-2:        #234B6E;
-        --text-3:        #457096;
-        --user-bubble:   linear-gradient(135deg, #FFEBCC 0%, #FFF9D2 100%);
-        --ai-bubble:     #FFFFFF;
-    }
+:root {
+    --ink: #007979;
+    --ink-soft: #4A4A4A;
+    --ink-muted: #8A8A8A;
+    --paper: #FFFFFF;
+    --panel: #FAFAFA;
+    --line: #E7E7E5;
+    --line-strong: #007979;
+    --shadow-sm: 0 1px 2px rgba(0,121,121,0.05);
+    --shadow-md: 0 4px 16px rgba(0,121,121,0.07);
+    --primary-color: #007979 !important;
+}
 
-    /* ── Global Reset ── */
-    html, body, [class*="css"], .stApp {
-        background:
-            radial-gradient(1100px 620px at 15% -10%, var(--bg-glow-a) 0%, transparent 55%),
-            radial-gradient(900px 700px at 100% 10%, var(--bg-glow-b) 0%, transparent 50%),
-            var(--bg) !important;
-        color: var(--text-1) !important;
-        font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
-    }
+html, body, [class*="css"], .stApp, .main, section.main {
+    font-family: 'Inter', -apple-system, 'Segoe UI', Roboto, 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif !important;
+    color: var(--ink) !important;
+}
 
-    header, footer, #MainMenu { display: none !important; }
-    [data-testid="stToolbar"] { display: none !important; }
-    [data-testid="stDecoration"] { display: none !important; }
+/* ── Top signature rule ── */
+[data-testid="stAppViewContainer"]::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--ink);
+    z-index: 999999;
+}
 
-    .block-container {
-        padding-top: 0 !important;
-        padding-bottom: 7.5rem !important;
-        max-width: 100% !important;
-        padding-left: 0 !important;
-        padding-right: 0 !important;
-    }
+/* ── Page background ── */
+.stApp, .main, section.main, [data-testid="stAppViewContainer"],
+[data-testid="stHeader"], [data-testid="stMain"] {
+    background-color: var(--paper) !important;
+}
+[data-testid="stHeader"] { background-color: transparent !important; }
 
-    ::-webkit-scrollbar { width: 5px; height: 5px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: #8CC0EB; border-radius: 99px; }
+/* ── Generic buttons ── */
+button, .stButton > button, div[data-testid="stButton"] button,
+button[kind="secondary"], button[kind="primary"], button[kind^="header"] {
+    background-color: var(--paper) !important;
+    color: var(--ink) !important;
+    border: 1px solid var(--ink) !important;
+    border-radius: 8px !important;
+    box-shadow: none !important;
+    transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+button:hover, .stButton > button:hover {
+    background-color: var(--ink) !important;
+    color: var(--paper) !important;
+    box-shadow: var(--shadow-sm) !important;
+}
 
-    /* ══════════════════════════════════════
-       SIDEBAR
-    ══════════════════════════════════════ */
-    [data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #8CC0EB 0%, #BFDDF0 100%) !important;
-        border-right: 1.5px solid var(--border-md) !important;
-        padding-top: 0 !important;
-    }
-    [data-testid="stSidebar"] > div:first-child { padding-top: 0 !important; }
-    [data-testid="stSidebarContent"] { padding: 0 !important; }
+/* Primary "confirm" buttons (first column) */
+div[data-testid="column"]:first-of-type .stButton button {
+    background-color: var(--ink) !important;
+    color: var(--paper) !important;
+}
+div[data-testid="column"]:first-of-type .stButton button:hover {
+    background-color: #005f5f !important;
+    color: var(--paper) !important;
+}
 
-    .sb-brand {
-        display: flex;
-        align-items: center;
-        gap: 11px;
-        padding: 20px 18px 16px 18px;
-        border-bottom: 1.5px solid var(--border-md);
-    }
-    .sb-brand-icon {
-        width: 36px; height: 36px;
-        background: linear-gradient(135deg, #8CC0EB, #FFEBCC);
-        border-radius: 11px;
-        display: flex; align-items: center; justify-content: center;
-        font-size: 17px; flex-shrink: 0;
-        box-shadow: 0 4px 18px rgba(140,192,235,0.6);
-        color: #0C2336;
-    }
-    .sb-brand-name {
-        font-family: 'Sora', sans-serif;
-        font-size: 0.95rem;
-        font-weight: 700;
-        color: var(--text-1);
-        letter-spacing: -0.01em;
-    }
-    .sb-brand-sub { font-size: 0.68rem; color: var(--text-3); margin-top: 1px; }
+/* ── Generic inputs ── */
+input, textarea, select,
+div[data-baseweb="input"], div[data-baseweb="select"], div[data-baseweb="base-input"] {
+    border-color: var(--line) !important;
+    border-radius: 6px !important;
+    color: var(--ink) !important;
+    background-color: var(--paper) !important;
+}
 
-    .sb-section { padding: 16px 18px 6px 18px; }
-    .sb-section-label {
-        font-size: 0.63rem;
-        font-weight: 700;
-        color: var(--text-3);
-        text-transform: uppercase;
-        letter-spacing: 0.09em;
-        margin-bottom: 10px;
-    }
+a { color: var(--ink) !important; }
+*:focus { outline-color: var(--ink) !important; }
 
-    .pat-card {
-        background: #FFFFFF;
-        border: 1.5px solid var(--border-md);
-        border-radius: 12px;
-        padding: 13px;
-        margin-bottom: 6px;
-        box-shadow: 0 2px 10px rgba(140,192,235,0.25);
-    }
-    .pat-card-row {
-        display: flex;
-        justify-content: space-between;
-        font-size: 0.76rem;
-        padding: 4px 0;
-        color: var(--text-2);
-        border-bottom: 1px solid rgba(140,192,235,0.3);
-    }
-    .pat-card-row:last-child { border-bottom: none; }
-    .pat-card-row span { color: var(--text-3); }
-    .pat-card-row strong { color: #1F7199; font-weight: 600; }
+/* ══════════════════════════════════════
+   HERO
+   ══════════════════════════════════════ */
+.hero { margin-bottom: 2.2rem; }
+.hero-eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin: 0 0 0.6rem 0;
+}
+.hero-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 2.5rem;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    color: var(--ink);
+    margin: 0 0 0.75rem 0;
+}
+.hero-rule {
+    width: 46px;
+    height: 3px;
+    background: var(--ink);
+    border-radius: 2px;
+    margin-bottom: 0.9rem;
+}
+.hero-sub {
+    font-size: 0.95rem;
+    color: var(--ink-soft);
+    max-width: 34rem;
+    line-height: 1.5;
+    margin: 0;
+}
 
-    .dag-pipeline { padding: 4px 0; }
-    .dag-step {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 6px 0;
-        font-size: 0.75rem;
-        color: var(--text-2);
-    }
-    .dag-step-dot {
-        width: 6px; height: 6px;
-        border-radius: 50%;
-        background: #5296CC;
-        flex-shrink: 0;
-        box-shadow: 0 0 7px rgba(82,150,204,0.5);
-    }
-    .dag-connector { width: 1px; height: 10px; background: var(--border-md); margin-left: 2px; }
+/* ══════════════════════════════════════
+   EMPTY STATE
+   ══════════════════════════════════════ */
+.empty-state {
+    border: 1px dashed var(--line);
+    border-radius: 10px;
+    padding: 2.4rem 1.5rem;
+    text-align: center;
+    color: var(--ink-muted);
+    font-size: 0.88rem;
+    margin: 1.5rem 0 2rem 0;
+    background: var(--panel);
+}
+.empty-state strong {
+    display: block;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1rem;
+    color: var(--ink);
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+}
 
-    [data-testid="stSidebar"] .stSelectbox > div > div {
-        background: #FFFFFF !important;
-        border: 1.5px solid var(--border-md) !important;
-        border-radius: 10px !important;
-        color: var(--text-1) !important;
-        font-size: 0.82rem !important;
-    }
+/* ══════════════════════════════════════
+   SIDEBAR
+   ══════════════════════════════════════ */
+[data-testid="stSidebar"] {
+    background-color: var(--panel);
+    border-right: 1px solid var(--line);
+}
+[data-testid="stSidebar"] .block-container { padding-top: 2rem; }
+[data-testid="stSidebar"] h3 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem !important;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ink-soft) !important;
+    font-weight: 500 !important;
+    margin-bottom: 0.75rem !important;
+}
+[data-testid="stSidebar"] .stTextInput input {
+    font-family: 'IBM Plex Mono', monospace;
+    border: 1px solid var(--line) !important;
+    border-radius: 6px !important;
+    background-color: var(--paper);
+}
+[data-testid="stSidebar"] hr {
+    border-color: var(--line);
+    margin: 1.4rem 0;
+}
 
-    [data-testid="stSidebar"] .stButton > button {
-        background: #FFFFFF !important;
-        border: 1.5px solid var(--border-md) !important;
-        color: var(--text-1) !important;
-        border-radius: 10px !important;
-        font-size: 0.8rem !important;
-        font-weight: 600 !important;
-        padding: 7px 12px !important;
-        transition: all 0.15s ease !important;
-        width: 100% !important;
-    }
-    [data-testid="stSidebar"] .stButton > button:hover {
-        background: #FFF9D2 !important;
-        border-color: #8CC0EB !important;
-        color: #0C2336 !important;
-    }
+/* Patient info card */
+.pat-card {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 13px;
+    margin: 8px 0;
+    box-shadow: var(--shadow-sm);
+}
+.pat-card-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.76rem;
+    padding: 4px 0;
+    color: var(--ink-soft);
+    border-bottom: 1px solid var(--line);
+}
+.pat-card-row:last-child { border-bottom: none; }
+.pat-card-row span { color: var(--ink-muted); }
+.pat-card-row strong { color: var(--ink); font-weight: 600; }
 
-    /* ══════════════════════════════════════
-       MAIN AREA & STATIC HEADER
-    ══════════════════════════════════════ */
-    .main-wrapper {
-        max-width: 860px;
-        margin: 0 auto;
-        padding: 0 24px;
-    }
+/* Agent pipeline */
+.pipeline-section { margin-top: 0.5rem; }
+.pipeline-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.63rem;
+    font-weight: 500;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    margin-bottom: 8px;
+}
+.dag-pipeline { padding: 4px 0; }
+.dag-step {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 5px 0;
+    font-size: 0.72rem;
+    color: var(--ink-soft);
+}
+.dag-step-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--ink);
+    flex-shrink: 0;
+}
+.dag-connector { width: 1px; height: 8px; background: var(--line); margin-left: 2px; }
 
-    .sticky-header-container {
-        position: sticky;
-        top: 0;
-        z-index: 999;
-        background: #BFDDF0;
-        padding-top: 20px;
-        padding-bottom: 12px;
-        border-bottom: 1.5px solid var(--border-md);
-        margin-bottom: 20px;
-    }
+/* Agent status readout */
+.agent-status {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 0.75rem 0.85rem;
+    margin-top: 0.4rem;
+    background: var(--paper);
+    box-shadow: var(--shadow-sm);
+}
+.agent-status .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--ink);
+    flex-shrink: 0;
+    animation: pulse 2s ease-in-out infinite;
+}
+.agent-status span {
+    color: var(--ink);
+    font-weight: 600;
+}
+@keyframes pulse {
+    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(0,121,121,0.25); }
+    50% { opacity: 0.55; box-shadow: 0 0 0 4px rgba(0,121,121,0); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .agent-status .dot { animation: none; }
+}
 
-    .chat-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 10px;
-    }
-    .chat-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        background: #FFEBCC;
-        border: 1px solid #F7D7A3;
-        border-radius: 20px;
-        padding: 4px 11px;
-        font-size: 0.65rem;
-        font-weight: 700;
-        color: #7A4B00;
-        text-transform: uppercase;
-        letter-spacing: 0.07em;
-    }
-    .chat-badge-dot { width: 5px; height: 5px; border-radius: 50%; background: #D97706; animation: pulse-dot 2s infinite; }
-    @keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:.4;transform:scale(.8);} }
+/* ══════════════════════════════════════
+   CHAT MESSAGES
+   ══════════════════════════════════════ */
+[data-testid="stChatMessage"] {
+    background-color: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 0.85rem 1.1rem;
+    margin-bottom: 0.7rem;
+    max-width: 82%;
+    box-shadow: var(--shadow-sm);
+}
 
-    .hero-greeting { font-size: 0.95rem; color: var(--text-2); margin-top: 16px; }
-    .hero-title {
-        font-family: 'Sora', sans-serif;
-        font-size: 2rem;
-        font-weight: 800;
-        color: #0C2336;
-        letter-spacing: -0.03em;
-        line-height: 1.15;
-        margin-top: 2px;
-        margin-bottom: 6px;
-        background: linear-gradient(90deg, #0C2336 40%, #234B6E 100%);
-        -webkit-background-clip: text;
-        background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
-    .hero-subtitle { font-size: 0.85rem; color: var(--text-2); margin-bottom: 22px; }
+/* User bubble — teal */
+[data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]),
+[data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-user"]) {
+    margin-left: auto;
+    background-color: var(--ink);
+    border-color: var(--ink);
+    border-bottom-right-radius: 3px;
+}
+[data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) p,
+[data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) li,
+[data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) span,
+[data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) .stMarkdown,
+[data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-user"]) p,
+[data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-user"]) li,
+[data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-user"]) span,
+[data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-user"]) .stMarkdown {
+    color: var(--paper) !important;
+}
 
-    /* ── Robot mascot ── */
-    .mascot-wrap {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 8px 0 26px 0;
-    }
-    .mascot-orb {
-        width: 128px; height: 128px;
-        border-radius: 50%;
-        display: flex; align-items: center; justify-content: center;
-        font-size: 62px;
-        background: radial-gradient(circle at 35% 30%, #8CC0EB 0%, #BFDDF0 70%);
-        border: 3px solid #FFFFFF;
-        box-shadow: 0 12px 40px rgba(140,192,235,0.6), inset 0 0 30px rgba(255,249,210,0.5);
-        animation: float-bot 4.5s ease-in-out infinite;
-    }
-    @keyframes float-bot { 0%,100%{transform:translateY(0px);} 50%{transform:translateY(-9px);} }
+/* Assistant bubble — white */
+[data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarAssistant"]),
+[data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-assistant"]) {
+    margin-right: auto;
+    background-color: var(--paper);
+    border-color: var(--line);
+    border-bottom-left-radius: 3px;
+}
 
-    /* ── Quick action cards ── */
-    .qa-label { font-size: 0.68rem; font-weight: 700; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.08em; margin: 4px 0 10px 2px; }
-    .cap-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 8px; }
+/* User avatar — teal with "U" */
+[data-testid="stChatMessageAvatarUser"],
+[data-testid="chatAvatarIcon-user"] {
+    background-color: var(--ink) !important;
+    position: relative;
+    color: transparent !important;
+    font-size: 0 !important;
+}
+[data-testid="stChatMessageAvatarUser"] img,
+[data-testid="stChatMessageAvatarUser"] svg,
+[data-testid="stChatMessageAvatarUser"] span,
+[data-testid="chatAvatarIcon-user"] img,
+[data-testid="chatAvatarIcon-user"] svg {
+    display: none !important;
+}
+[data-testid="stChatMessageAvatarUser"]::after,
+[data-testid="chatAvatarIcon-user"]::after {
+    content: "U";
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--paper);
+}
 
-    .stButton.qa-button > button {
-        background: #FFFFFF !important;
-        border: 1.5px solid var(--border-md) !important;
-        border-radius: 14px !important;
-        padding: 16px 14px !important;
-        text-align: left !important;
-        height: auto !important;
-        white-space: normal !important;
-        color: var(--text-1) !important;
-        transition: all 0.18s ease !important;
-        width: 100% !important;
-        box-shadow: 0 3px 12px rgba(140,192,235,0.25) !important;
-    }
-    .stButton.qa-button > button:hover {
-        border-color: #5296CC !important;
-        background: #FFF9D2 !important;
-        transform: translateY(-2px);
-        box-shadow: 0 10px 24px rgba(140,192,235,0.45) !important;
-    }
+/* Assistant avatar — white with teal border and "AI" */
+[data-testid="stChatMessageAvatarAssistant"],
+[data-testid="chatAvatarIcon-assistant"] {
+    background-color: var(--paper) !important;
+    border: 1px solid var(--ink) !important;
+    position: relative;
+    color: transparent !important;
+    font-size: 0 !important;
+}
+[data-testid="stChatMessageAvatarAssistant"] img,
+[data-testid="stChatMessageAvatarAssistant"] svg,
+[data-testid="stChatMessageAvatarAssistant"] span,
+[data-testid="chatAvatarIcon-assistant"] img,
+[data-testid="chatAvatarIcon-assistant"] svg {
+    display: none !important;
+}
+[data-testid="stChatMessageAvatarAssistant"]::after,
+[data-testid="chatAvatarIcon-assistant"]::after {
+    content: "AI";
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.6rem;
+    font-weight: 600;
+    color: var(--ink);
+}
 
-    @media (max-width: 700px) { .cap-grid { grid-template-columns: repeat(2, 1fr); } }
+/* Node tag for agent info */
+.node-tag {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: var(--paper); border: 1px solid var(--ink); color: var(--ink);
+    font-family: 'IBM Plex Mono', monospace;
+    padding: 2px 9px; border-radius: 99px; font-size: 0.63rem; font-weight: 500;
+    letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 8px;
+}
 
-    .pulse-divider { width: 100%; height: 20px; margin: 6px 0 20px 0; opacity: 0.7; }
+/* ══════════════════════════════════════
+   CHAT INPUT
+   ══════════════════════════════════════ */
+[data-testid="stChatInput"],
+[data-testid="stChatInput"] > div,
+[data-testid="stChatInput"] [data-baseweb="base-input"],
+[data-testid="stChatInput"] [data-baseweb="textarea"],
+[data-testid="stChatInput"] textarea {
+    background-color: #FFFFFF !important;
+    background: #FFFFFF !important;
+}
+[data-testid="stChatInput"] {
+    border: 1px solid var(--ink) !important;
+    border-radius: 14px !important;
+    box-shadow: var(--shadow-md) !important;
+}
+[data-testid="stChatInput"] textarea {
+    font-family: 'Inter', sans-serif;
+    color: #0F0F0F !important;
+}
+[data-testid="stChatInput"] button {
+    background-color: var(--ink) !important;
+    border-radius: 50% !important;
+    border: none !important;
+}
+[data-testid="stChatInput"] button svg {
+    color: var(--paper) !important;
+    fill: var(--paper) !important;
+}
 
-    /* ══════════════════════════════════════
-       STATUS CHIPS
-    ══════════════════════════════════════ */
-    .status-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 0; }
-    .status-chip {
-        display: inline-flex; align-items: center; gap: 6px;
-        background: #FFFFFF; border: 1.5px solid var(--border-md);
-        border-radius: 8px; padding: 6px 11px; font-size: 0.72rem; color: var(--text-2);
-        box-shadow: 0 2px 8px rgba(140,192,235,0.2);
-    }
-    .status-chip .chip-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 5px var(--green-dim); }
-    .status-chip .chip-label { color: var(--text-3); text-transform: uppercase; font-size: 0.6rem; letter-spacing: 0.06em; font-weight: 700; }
-    .status-chip .chip-value { color: var(--text-1); font-weight: 600; }
+/* Bottom gradient fade */
+html body [data-testid="stBottom"],
+html body [data-testid="stBottom"] > div {
+    background: linear-gradient(180deg, rgba(255,255,255,0) 0%, #FFFFFF 45%) !important;
+    border-top: none !important;
+}
+html body [data-testid="stBottomBlockContainer"] {
+    background: transparent !important;
+    padding: 6px 18px 18px 18px !important;
+}
 
-    /* ══════════════════════════════════════
-       CHAT MESSAGES
-    ══════════════════════════════════════ */
-    [data-testid="stChatMessage"] {
-        background: transparent !important;
-        border: none !important;
-        box-shadow: none !important;
-        padding: 0 !important;
-        max-width: 100% !important;
-        width: 100% !important;
-        margin-bottom: 10px !important;
-    }
-    [data-testid="stChatMessage"] [data-testid="stMarkdownContainer"] { width: 100% !important; }
+/* ══════════════════════════════════════
+   VOICE EXPANDER
+   ══════════════════════════════════════ */
+.voice-expander [data-testid="stExpander"] {
+    border: 1px solid var(--line) !important;
+    border-radius: 10px !important;
+    background-color: var(--panel);
+    box-shadow: var(--shadow-sm);
+}
+.voice-expander [data-testid="stExpander"] summary {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    color: var(--ink-soft);
+    padding: 0.55rem 0.85rem;
+}
+[data-testid="stAudioInput"] {
+    border-radius: 10px !important;
+    background-color: var(--paper) !important;
+    border: 1px solid var(--line) !important;
+}
+[data-testid="stAudioInput"] button {
+    background-color: var(--ink) !important;
+    color: var(--paper) !important;
+    border: none !important;
+    border-radius: 50% !important;
+}
+[data-testid="stAudioInput"] button:hover {
+    background-color: #005f5f !important;
+    color: var(--paper) !important;
+}
 
-    [data-testid="stChatMessage"] [data-testid="chatAvatarIcon-user"],
-    [data-testid="stChatMessage"] [data-testid="chatAvatarIcon-assistant"] {
-        background: #FFFFFF !important;
-        border: 1.5px solid #8CC0EB !important;
-        border-radius: 9px !important;
-        width: 30px !important; height: 30px !important;
-        font-size: 12px !important;
-    }
+/* ══════════════════════════════════════
+   HITL / PENDING ACTION CONTAINER
+   ══════════════════════════════════════ */
+[data-testid="stVerticalBlockBorderWrapper"] {
+    border: 1px solid var(--ink) !important;
+    border-radius: 12px !important;
+    background-color: var(--panel);
+    box-shadow: var(--shadow-sm);
+}
 
-    [data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-user"]) .stMarkdown {
-        background: var(--user-bubble) !important;
-        border: 1.5px solid #F7D7A3 !important;
-        border-radius: 14px 14px 4px 14px !important;
-        padding: 14px 18px !important;
-        margin-left: 8px;
-        box-shadow: 0 6px 18px rgba(255, 235, 204, 0.6);
-    }
-    [data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-user"]) p { color: #0C2336 !important; }
+/* ══════════════════════════════════════
+   ALERTS
+   ══════════════════════════════════════ */
+[data-testid="stAlert"], .stAlert, div[role="alert"] {
+    background-color: var(--ink) !important;
+    color: var(--paper) !important;
+    border-radius: 8px !important;
+}
+[data-testid="stAlert"] p, .stAlert p, div[role="alert"] p,
+[data-testid="stAlert"] *, .stAlert *, div[role="alert"] * {
+    color: var(--paper) !important;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+}
 
-    [data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-assistant"]) .stMarkdown {
-        background: var(--ai-bubble) !important;
-        border: 1.5px solid #8CC0EB !important;
-        border-radius: 14px 14px 14px 4px !important;
-        padding: 14px 18px !important;
-        margin-right: 8px;
-        box-shadow: 0 4px 14px rgba(140, 192, 235, 0.25);
-    }
+/* ══════════════════════════════════════
+   FORM LABELS & INPUTS
+   ══════════════════════════════════════ */
+label {
+    font-family: 'IBM Plex Mono', monospace !important;
+    font-size: 0.72rem !important;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-soft) !important;
+}
+.stTextInput input, .stNumberInput input, .stDateInput input,
+.stSelectbox [data-baseweb="select"] {
+    border: 1px solid var(--line) !important;
+    border-radius: 6px !important;
+}
+.stCheckbox label { text-transform: none; }
+.stRadio label { text-transform: none; }
 
-    [data-testid="stChatMessage"] p { font-size: 0.875rem !important; line-height: 1.65 !important; color: var(--text-1) !important; margin-bottom: 6px !important; }
-    [data-testid="stChatMessage"] strong { color: #0C2336 !important; font-weight: 700 !important; }
-    [data-testid="stChatMessage"] code {
-        font-family: 'Geist Mono', 'Fira Code', monospace !important;
-        background: #EBF4FB !important; border: 1px solid #8CC0EB !important;
-        padding: 1px 5px !important; border-radius: 4px !important; font-size: 0.8rem !important; color: #1F7199 !important;
-    }
-    [data-testid="stChatMessage"] pre { background: #EBF4FB !important; border: 1px solid #8CC0EB !important; border-radius: 8px !important; padding: 12px !important; overflow-x: auto !important; }
-    [data-testid="stChatMessage"] ul, [data-testid="stChatMessage"] ol { padding-left: 18px !important; }
-    [data-testid="stChatMessage"] li { font-size: 0.875rem !important; line-height: 1.65 !important; color: var(--text-1) !important; margin-bottom: 2px !important; }
-    [data-testid="stChatMessage"] h1, [data-testid="stChatMessage"] h2, [data-testid="stChatMessage"] h3, [data-testid="stChatMessage"] h4 { color: var(--text-1) !important; margin-top: 8px !important; margin-bottom: 6px !important; }
+hr { border-color: var(--line); }
 
-    .node-tag {
-        display: inline-flex; align-items: center; gap: 5px;
-        background: #FFEBCC; border: 1px solid #F7D7A3; color: #7A4B00;
-        padding: 2px 9px; border-radius: 99px; font-size: 0.63rem; font-weight: 700;
-        letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 8px;
+/* ══════════════════════════════════════
+   QUICK ACTION BUTTONS
+   ══════════════════════════════════════ */
+.qa-btn .stButton > button {
+    background: var(--paper) !important;
+    border: 1px solid var(--line) !important;
+    border-radius: 10px !important;
+    padding: 14px !important;
+    text-align: left !important;
+    height: auto !important;
+    white-space: normal !important;
+    box-shadow: var(--shadow-sm) !important;
+    font-size: 0.82rem !important;
+}
+.qa-btn .stButton > button:hover {
+    border-color: var(--ink) !important;
+    background: var(--ink) !important;
+    color: var(--paper) !important;
+}
 
-    /* ══════════════════════════════════════
-       FIXED UNIFIED BOTTOM INPUT BAR
-    ══════════════════════════════════════ */
+/* ══════════════════════════════════════
+   PDF BANNER
+   ══════════════════════════════════════ */
+.pdf-banner {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--panel); border: 1px solid var(--ink);
+    border-radius: 10px; padding: 9px 13px; margin-bottom: 12px;
+    font-size: 0.78rem; color: var(--ink); font-weight: 600;
+}
 
-    /* Bottom gradient fade background */
-    html body [data-testid="stBottom"],
-    html body [data-testid="stBottom"] > div {
-        background: linear-gradient(180deg, rgba(191,221,240,0) 0%, #BFDDF0 35%) !important;
-        border-top: none !important;
-    }
+/* ══════════════════════════════════════
+   PDF UPLOAD BUTTON — FIXED BESIDE CHAT INPUT
+   ══════════════════════════════════════ */
+[data-testid="stElementContainer"]:has(#pdf-upload-btn),
+div:has(> #pdf-upload-btn),
+.stMarkdown:has(#pdf-upload-btn) {
+    position: fixed !important;
+    bottom: 23px !important;
+    left: max(18px, calc(50% - 345px)) !important;
+    z-index: 999999 !important;
+    width: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
 
-    /* Bottom container layout */
-    html body [data-testid="stBottomBlockContainer"],
-    html body .stChatFloatingInputContainer {
-        background: transparent !important;
-        max-width: 900px !important;
-        margin-left: auto !important;
-        margin-right: auto !important;
-        padding: 6px 18px 18px 18px !important;
-    }
+.pdf-upload-row .stPopover > button,
+.pdf-upload-row [data-testid="stPopover"] button {
+    background: var(--paper) !important;
+    border: 1px solid var(--ink) !important;
+    border-radius: 50% !important;
+    color: var(--ink) !important;
+    font-size: 1.1rem !important;
+    height: 2.4rem !important;
+    width: 2.4rem !important;
+    min-width: 2.4rem !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: background-color 0.15s ease, color 0.15s ease !important;
+    box-shadow: var(--shadow-sm) !important;
+}
+.pdf-upload-row .stPopover > button:hover,
+.pdf-upload-row [data-testid="stPopover"] button:hover {
+    background: var(--ink) !important;
+    border-color: var(--ink) !important;
+    color: var(--paper) !important;
+}
 
-    /* ── Chat input pill ── */
-    html body [data-testid="stChatInput"] {
-        background: #FFFFFF !important;
-        border: 2px solid #8CC0EB !important;
-        border-radius: 999px !important;
-        box-shadow: 0 6px 24px rgba(140,192,235,0.35) !important;
-        transition: border-color 0.18s ease, box-shadow 0.18s ease !important;
-        margin-left: 95px !important; /* Make room for fixed 📎 and 🎤 buttons on left */
-    }
-    html body [data-testid="stChatInput"]:focus-within {
-        border-color: #5296CC !important;
-        box-shadow: 0 0 0 3px rgba(140,192,235,0.4), 0 6px 24px rgba(140,192,235,0.35) !important;
-    }
-    html body [data-testid="stChatInput"] [data-baseweb="textarea"],
-    html body [data-testid="stChatInput"] [data-baseweb="base-input"] {
-        background: transparent !important;
-        border: none !important;
-    }
-    html body [data-testid="stChatInput"] textarea {
-        color: #0C2336 !important;
-        -webkit-text-fill-color: #0C2336 !important;
-        caret-color: #5296CC !important;
-        font-size: 0.9rem !important;
-        font-family: 'Inter', sans-serif !important;
-        background: transparent !important;
-        padding: 12px 18px !important;
-        line-height: 1.5 !important;
-    }
-    html body [data-testid="stChatInput"] textarea::placeholder {
-        color: #457096 !important;
-        opacity: 1 !important;
-    }
-    /* Send button inside the pill */
-    html body [data-testid="stChatInput"] button {
-        background: linear-gradient(135deg, #8CC0EB, #5296CC) !important;
-        border-radius: 50% !important;
-        width: 2rem !important;
-        height: 2rem !important;
-        transition: transform 0.1s ease !important;
-    }
-    html body [data-testid="stChatInput"] button:hover {
-        transform: scale(1.08) !important;
-    }
-    html body [data-testid="stChatInput"] button svg {
-        fill: #FFFFFF !important;
-    }
+/* Make room for the fixed PDF button beside chat input */
+html body [data-testid="stChatInput"] {
+    margin-left: 50px !important;
+}
 
-    /* ── FIXED Bottom action buttons row (📎 upload + 🎤 mic) ── */
-    [data-testid="stElementContainer"]:has(#bottom-actions-container),
-    div:has(> #bottom-actions-container),
-    .stMarkdown:has(#bottom-actions-container) {
-        position: fixed !important;
-        bottom: 24px !important;
-        left: calc(50% - 432px) !important;
-        z-index: 999999 !important;
-        width: auto !important;
-        margin: 0 !important;
-        padding: 0 !important;
-    }
+/* File uploader inside popover */
+[data-testid="stFileUploader"] {
+    background: var(--paper) !important;
+    border: 1px dashed var(--ink) !important;
+    border-radius: 10px !important;
+    padding: 10px !important;
+}
+[data-testid="stFileUploader"] label {
+    color: var(--ink-soft) !important;
+    font-size: 0.8rem !important;
+}
 
-    #bottom-actions-container {
-        display: flex !important;
-        align-items: center !important;
-        gap: 8px !important;
-    }
-
-    .bottom-actions-row .stPopover > button,
-    .bottom-actions-row [data-testid="stPopover"] button {
-        background: #FFFFFF !important;
-        border: 2px solid #8CC0EB !important;
-        border-radius: 50% !important;
-        color: #0C2336 !important;
-        font-size: 1.1rem !important;
-        height: 2.5rem !important;
-        width: 2.5rem !important;
-        min-width: 2.5rem !important;
-        padding: 0 !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        transition: all 0.15s ease !important;
-        box-shadow: 0 4px 12px rgba(140,192,235,0.3) !important;
-    }
-    .bottom-actions-row .stPopover > button:hover,
-    .bottom-actions-row [data-testid="stPopover"] button:hover {
-        background: #FFF9D2 !important;
-        border-color: #5296CC !important;
-        transform: scale(1.05) !important;
-    }
-
-    /* Audio input mic button styling */
-    .bottom-actions-row [data-testid="stAudioInput"] {
-        display: block !important;
-    }
-    .bottom-actions-row [data-testid="stAudioInput"] > label {
-        display: none !important;
-    }
-    .bottom-actions-row [data-testid="stAudioInput"] button {
-        background: #FFFFFF !important;
-        border: 2px solid #8CC0EB !important;
-        border-radius: 50% !important;
-        color: #0C2336 !important;
-        height: 2.5rem !important;
-        width: 2.5rem !important;
-        min-width: 2.5rem !important;
-        padding: 0 !important;
-        box-shadow: 0 4px 12px rgba(140,192,235,0.3) !important;
-        transition: all 0.15s ease !important;
-    }
-    .bottom-actions-row [data-testid="stAudioInput"] button:hover {
-        background: #FFF9D2 !important;
-        border-color: #5296CC !important;
-        transform: scale(1.05) !important;
-    }
-
-    /* Hide default audio-input if outside bottom-actions-row */
-    [data-testid="stAudioInput"]:not(.bottom-actions-row [data-testid="stAudioInput"]) {
-        display: none !important;
-    }
-
-    /* ══════════════════════════════════════
-       HITL FORM & MISC WIDGETS
-    ══════════════════════════════════════ */
-    .hitl-card {
-        background: #FFFFFF;
-        border: 2px solid #8CC0EB;
-        border-radius: 16px;
-        padding: 20px 22px;
-        margin: 16px 0;
-        box-shadow: 0 6px 24px rgba(140,192,235,0.35);
-    }
-    .hitl-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-    .hitl-title { font-family: 'Sora', sans-serif; font-size: 0.95rem; font-weight: 700; color: var(--text-1); }
-    .hitl-badge {
-        background: #FFEBCC; border: 1px solid #F7D7A3; color: #7A4B00;
-        font-size: 0.62rem; font-weight: 700; padding: 3px 9px; border-radius: 99px; text-transform: uppercase; letter-spacing: 0.05em;
-    }
-    .hitl-detail-row { font-size: 0.8rem; color: var(--text-2); margin-bottom: 4px; line-height: 1.6; }
-    .hitl-detail-row b { color: var(--text-1); font-weight: 500; }
-
-    .stButton > button {
-        background: #FFFFFF !important;
-        border: 1.5px solid #8CC0EB !important;
-        color: #0C2336 !important;
-        border-radius: 10px !important;
-        font-size: 0.82rem !important;
-        font-weight: 600 !important;
-        font-family: 'Inter', sans-serif !important;
-        transition: all 0.15s ease !important;
-    }
-    .stButton > button:hover { background: #FFF9D2 !important; border-color: #5296CC !important; color: #0C2336 !important; }
-    [data-testid="baseButton-primary"] { background: linear-gradient(135deg, #8CC0EB, #5296CC) !important; border: none !important; color: #FFFFFF !important; }
-    [data-testid="baseButton-primary"]:hover { filter: brightness(1.08); }
-
-    .stSelectbox > div > div {
-        background: #FFFFFF !important; border: 1.5px solid #8CC0EB !important;
-        border-radius: 10px !important; color: #0C2336 !important; font-size: 0.82rem !important;
-    }
-    .stDateInput > div > div > input {
-        background: #FFFFFF !important; border: 1.5px solid #8CC0EB !important;
-        border-radius: 10px !important; color: #0C2336 !important; font-size: 0.82rem !important;
-    }
-
-    [data-testid="stAlert"] { background: #FFFFFF !important; border: 1.5px solid #8CC0EB !important; border-radius: 12px !important; color: #0C2336 !important; font-size: 0.82rem !important; }
-
-    hr { border-color: var(--border-md) !important; margin: 12px 0 !important; }
-
-    [data-testid="stFileUploader"] { background: #FFFFFF !important; border: 1.5px dashed #8CC0EB !important; border-radius: 10px !important; padding: 10px !important; }
-    [data-testid="stFileUploader"] label { color: var(--text-2) !important; font-size: 0.8rem !important; }
-
-    .stCaption, [data-testid="stCaption"] { color: var(--text-3) !important; font-size: 0.72rem !important; }
-    [data-testid="column"] { padding: 0 6px !important; }
-
-    .pdf-banner {
-        display: flex; align-items: center; gap: 8px;
-        background: #FFEBCC; border: 1.5px solid #F7D7A3;
-        border-radius: 10px; padding: 9px 13px; margin-bottom: 12px; font-size: 0.78rem; color: #7A4B00; font-weight: 600;
-    }
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--ink); border-radius: 99px; }
 </style>
 """, unsafe_allow_html=True)
+
 
 # ─── Session State Bootstrap ────────────────────────────────────────────────────
 if "graph_app" not in st.session_state:
@@ -584,6 +600,9 @@ if "user_sessions" not in st.session_state:
 if "queued_prompt" not in st.session_state:
     st.session_state.queued_prompt = None
 
+if "processed_audio_hash" not in st.session_state:
+    st.session_state.processed_audio_hash = None
+
 
 def get_current_session() -> dict:
     pid = st.session_state.current_patient_id
@@ -591,7 +610,7 @@ def get_current_session() -> dict:
         st.session_state.user_sessions[pid] = {
             "chat_history": [],
             "hitl_pending": None,
-            "active_agent": "Awaiting query",
+            "active_agent": "Supervisor",
             "rag_pipeline": None,
             "uploaded_pdf_name": None,
         }
@@ -600,333 +619,352 @@ def get_current_session() -> dict:
 
 curr_session = get_current_session()
 
+
+# ─── Hero Section ──────────────────────────────────────────────────────────────
+st.markdown(
+    """
+    <div class="hero">
+        <p class="hero-eyebrow">Appointments · Symptoms · Medications · Reports</p>
+        <h1 class="hero-title">MediAssist AI</h1>
+        <div class="hero-rule"></div>
+        <p class="hero-sub">Your intelligent assistant for appointments, symptoms, medications &amp; lab report analysis.</p>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+
 # ─── Sidebar ──────────────────────────────────────────────────────────────────
 with st.sidebar:
-    st.markdown("""
-    <div class="sb-brand">
-        <div class="sb-brand-icon">⚕</div>
-        <div>
-            <div class="sb-brand-name">MediAssist AI</div>
-            <div class="sb-brand-sub">Multi-agent healthcare intelligence</div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+    st.subheader("Session Settings")
 
-    st.markdown('<div class="sb-section"><div class="sb-section-label">Active Patient</div>', unsafe_allow_html=True)
     patients = load_json_file("data/patients.json", default=[])
-    patient_options = {f"{p['full_name']} ({p['patient_id']})": p["patient_id"] for p in patients}
+    patient_options = {
+        f"{p['full_name']} ({p['patient_id']})": p["patient_id"] for p in patients
+    }
     selected_label = st.selectbox(
-        "Patient",
+        "Active Patient",
         options=list(patient_options.keys()),
         index=0,
-        label_visibility="collapsed",
     )
     new_pid = patient_options.get(selected_label, "PAT0001")
     if st.session_state.current_patient_id != new_pid:
         st.session_state.current_patient_id = new_pid
         st.rerun()
-    st.markdown("</div>", unsafe_allow_html=True)
 
-    curr_p = next((p for p in patients if p["patient_id"] == st.session_state.current_patient_id), {})
+    # Patient info card
+    curr_p = next(
+        (p for p in patients if p["patient_id"] == st.session_state.current_patient_id),
+        {},
+    )
     if curr_p:
         allergies = ", ".join(curr_p.get("known_allergies", [])) or "None"
         conditions = ", ".join(curr_p.get("chronic_conditions", [])) or "None"
-        st.markdown(f"""
-        <div class="sb-section">
+        st.markdown(
+            f"""
         <div class="pat-card">
             <div class="pat-card-row"><span>Age / Sex</span><strong>{curr_p.get('age')} / {curr_p.get('gender')}</strong></div>
             <div class="pat-card-row"><span>Blood Group</span><strong>{curr_p.get('blood_group')}</strong></div>
             <div class="pat-card-row"><span>Allergies</span><strong>{allergies}</strong></div>
             <div class="pat-card-row"><span>Conditions</span><strong>{conditions}</strong></div>
         </div>
-        </div>
-        """, unsafe_allow_html=True)
+        """,
+            unsafe_allow_html=True,
+        )
 
-    st.markdown("""
-    <div class="sb-section">
-    <div class="sb-section-label">Agent Pipeline</div>
-    <div class="dag-pipeline">
-        <div class="dag-step"><div class="dag-step-dot"></div>Supervisor Router</div>
-        <div class="dag-connector"></div>
-        <div class="dag-step"><div class="dag-step-dot"></div>Appointment Agent</div>
-        <div class="dag-connector"></div>
-        <div class="dag-step"><div class="dag-step-dot"></div>Symptom Agent</div>
-        <div class="dag-connector"></div>
-        <div class="dag-step"><div class="dag-step-dot"></div>Medication Agent</div>
-        <div class="dag-connector"></div>
-        <div class="dag-step"><div class="dag-step-dot"></div>Report Agent</div>
-        <div class="dag-connector"></div>
-        <div class="dag-step"><div class="dag-step-dot"></div>Safety Reflection Node</div>
-    </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.markdown("<div style='height:1px;background:var(--border);margin:8px 0'></div>", unsafe_allow_html=True)
-
-    st.markdown('<div class="sb-section">', unsafe_allow_html=True)
-    if st.button("🗑️ Clear Chat", use_container_width=True):
+    if st.button("Clear Conversation"):
         curr_session["chat_history"] = []
         curr_session["hitl_pending"] = None
-        curr_session["active_agent"] = "Awaiting query"
+        curr_session["active_agent"] = "Supervisor"
         curr_session["rag_pipeline"] = None
         curr_session["uploaded_pdf_name"] = None
-        st.toast("Chat cleared.", icon="🧹")
         st.rerun()
-    st.markdown("</div>", unsafe_allow_html=True)
 
-# ─── Main Chat Area Wrapper ────────────────────────────────────────────────────
+    st.divider()
+
+    # Agent Pipeline
+    st.markdown(
+        """
+    <div class="pipeline-section">
+        <div class="pipeline-label">Agent Pipeline</div>
+        <div class="dag-pipeline">
+            <div class="dag-step"><div class="dag-step-dot"></div>Supervisor Router</div>
+            <div class="dag-connector"></div>
+            <div class="dag-step"><div class="dag-step-dot"></div>Appointment Agent</div>
+            <div class="dag-connector"></div>
+            <div class="dag-step"><div class="dag-step-dot"></div>Symptom Agent</div>
+            <div class="dag-connector"></div>
+            <div class="dag-step"><div class="dag-step-dot"></div>Medication Agent</div>
+            <div class="dag-connector"></div>
+            <div class="dag-step"><div class="dag-step-dot"></div>Report Agent</div>
+            <div class="dag-connector"></div>
+            <div class="dag-step"><div class="dag-step-dot"></div>Safety Reflection Node</div>
+        </div>
+    </div>
+    """,
+        unsafe_allow_html=True,
+    )
+
+    active_agent = curr_session.get("active_agent", "Supervisor")
+    st.markdown(
+        f'<div class="agent-status"><span class="dot"></span>Active Agent&nbsp;<span>{active_agent}</span></div>',
+        unsafe_allow_html=True,
+    )
+
+
+# ─── Chat Area ────────────────────────────────────────────────────────────────
 patient_name = curr_p.get("full_name", "there") if curr_p else "there"
-first_name = patient_name.split(" ")[0] if patient_name else "there"
-active_agent = curr_session.get("active_agent", "Awaiting query")
-chat_is_empty = len(curr_session["chat_history"]) == 0
-
-st.markdown('<div class="main-wrapper">', unsafe_allow_html=True)
-
-# ─── FIXED STATIC HEADER (Pinned top banner) ───────────────────────────────────
-st.markdown(f"""
-<div class="sticky-header-container">
-    <div class="chat-header">
-        <div class="chat-badge"><div class="chat-badge-dot"></div>AI SPECIALIST CHAT</div>
-    </div>
-    <div class="status-bar">
-        <div class="status-chip">
-            <div class="chip-dot"></div>
-            <span class="chip-label">PATIENT</span>
-            <span class="chip-value">{patient_name}</span>
-        </div>
-        <div class="status-chip">
-            <div class="chip-dot" style="background:var(--accent); box-shadow:0 0 5px var(--accent-glow);"></div>
-            <span class="chip-label">ACTIVE AGENT</span>
-            <span class="chip-value">{active_agent}</span>
-        </div>
-    </div>
-</div>
-""", unsafe_allow_html=True)
+messages = curr_session["chat_history"]
+chat_is_empty = len(messages) == 0
 
 if chat_is_empty:
-    st.markdown(f"""
-    <div class="hero-greeting">Hi, {first_name} 👋</div>
-    <div class="hero-title">How may I help you today?</div>
-    <div class="hero-subtitle">Your intelligent assistant for appointments, symptoms, medications & lab report analysis.</div>
-    """, unsafe_allow_html=True)
+    st.markdown(
+        """
+        <div class="empty-state">
+            <strong>No conversation yet</strong>
+            Ask about appointments, symptoms, medications, or upload a lab report to get started.
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
-    st.markdown("""
-    <div class="mascot-wrap"><div class="mascot-orb">🤖</div></div>
-    """, unsafe_allow_html=True)
-
-    st.markdown('<div class="qa-label">Quick Actions</div>', unsafe_allow_html=True)
+    # Quick Actions
     qa_col1, qa_col2, qa_col3, qa_col4 = st.columns(4)
     quick_actions = [
-        (qa_col1, "📅", "Book Appointment", "I'd like to book a doctor's appointment.", "cap-appt"),
-        (qa_col2, "🩺", "Check Symptoms", "I've been feeling unwell, can you help me understand my symptoms?", "cap-symp"),
-        (qa_col3, "💊", "Medication Info", "Can you tell me about my current medications and possible interactions?", "cap-med"),
-        (qa_col4, "📋", "Analyze Lab Report", "I want to upload and analyze my lab report.", "cap-report"),
+        (qa_col1, "📅", "Book Appointment", "I'd like to book a doctor's appointment.", "qa-appt"),
+        (qa_col2, "🩺", "Check Symptoms", "I've been feeling unwell, can you help me understand my symptoms?", "qa-symp"),
+        (qa_col3, "💊", "Medication Info", "Can you tell me about my current medications and possible interactions?", "qa-med"),
+        (qa_col4, "📋", "Analyze Report", "I want to upload and analyze my lab report.", "qa-report"),
     ]
     for col, icon, label, prompt_text, key in quick_actions:
         with col:
-            st.markdown('<div class="stButton qa-button">', unsafe_allow_html=True)
+            st.markdown('<div class="qa-btn">', unsafe_allow_html=True)
             if st.button(f"{icon}  {label}", key=key, use_container_width=True):
                 st.session_state.queued_prompt = prompt_text
                 st.rerun()
             st.markdown("</div>", unsafe_allow_html=True)
 
-    st.markdown("""
-    <svg class="pulse-divider" viewBox="0 0 820 18" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-      <polyline points="0,9 260,9 285,1 308,17 330,3 352,9 820,9"
-        fill="none" stroke="url(#grad)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-      <defs>
-        <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stop-color="#8CC0EB"/>
-            <stop offset="100%" stop-color="#FFEBCC"/>
-        </linearGradient>
-      </defs>
-    </svg>
-    """, unsafe_allow_html=True)
+# Chat History
+for msg in messages:
+    role = msg["role"]
+    content = msg["content"]
+    agent_info = msg.get("agent_info", None)
+    with st.chat_message(role):
+        if agent_info and role == "assistant":
+            st.markdown(
+                f"<div class='node-tag'>⬡ {agent_info}</div>", unsafe_allow_html=True
+            )
+        st.markdown(content)
 
 
-# ─── HITL Confirmation Function Definition ─────────────────────────────────────
-def render_hitl_confirmation():
-    pending = curr_session.get("hitl_pending")
-    if not pending:
-        return
-
-    # Ensure we have a patient id available for widget keys and lookups
-    patient_id = pending.get("patient_id") or st.session_state.get("current_patient_id")
-
-    action     = pending.get("action", "book").capitalize()
-    doctor     = pending.get("doctor_name", "Unknown Doctor")
-    specialty  = pending.get("specialty", "")
-    date_str   = pending.get("date", "2026-08-10")
-    time_slot  = pending.get("time_slot", "")
+# ─── HITL Appointment Confirmation ────────────────────────────────────────────
+pending = curr_session.get("hitl_pending")
+if pending:
+    patient_id = pending.get("patient_id") or st.session_state.get(
+        "current_patient_id"
+    )
+    action = pending.get("action", "book").capitalize()
+    doctor = pending.get("doctor_name", "Unknown Doctor")
+    specialty = pending.get("specialty", "")
+    date_str = pending.get("date", "2026-08-10")
+    time_slot = pending.get("time_slot", "")
     patient_nm = pending.get("patient_name", "")
     avail_slots = pending.get("available_slots", [])
-    avail_days  = pending.get("available_days", [])
-    fee        = pending.get("consultation_fee", 0)
-    currency   = pending.get("currency", "USD")
-    days_str   = ", ".join(avail_days) if avail_days else "All Week"
+    avail_days = pending.get("available_days", [])
+    fee = pending.get("consultation_fee", 0)
+    currency = pending.get("currency", "USD")
+    days_str = ", ".join(avail_days) if avail_days else "All Week"
 
     try:
         default_date = datetime.strptime(date_str, "%Y-%m-%d").date()
     except (ValueError, TypeError):
         default_date = datetime.now().date()
 
-    st.markdown(f"""
-    <div class="hitl-card">
-        <div class="hitl-header">
-            <div class="hitl-title">📋 Confirm Appointment — {action}</div>
-            <div class="hitl-badge">Human Validation Required</div>
-        </div>
-        <div class="hitl-detail-row"><b>Patient:</b> {patient_nm} &nbsp;|&nbsp; <b>Doctor:</b> {doctor} ({specialty})</div>
-        <div class="hitl-detail-row"><b>Available Days:</b> {days_str} &nbsp;|&nbsp; <b>Consultation Fee:</b> {currency} {fee}</div>
-    </div>
-    """, unsafe_allow_html=True)
-
-    # Allow the user to pick from matching doctors (HITL)
-    available_doctors = pending.get("available_doctors", [])
-    chosen_doctor = None
-    # Offer an option to expand to the full doctor directory
-    show_all_key = f"hitl_show_all_{patient_id}"
-    try:
-        show_all = st.checkbox("Show all doctors", key=show_all_key)
-    except Exception:
-        show_all = False
-
-    if show_all:
-        # Load the full doctor directory
-        all_docs = DoctorLookupTool().search_doctors()
-        if all_docs:
-            available_doctors = all_docs
-
-    # Text filter to help patients find a doctor quickly
-    filter_key = f"hitl_filter_{patient_id}"
-    filter_text = st.text_input("Filter doctors by name or specialty", key=filter_key)
-    filtered_docs = available_doctors
-    if filter_text:
-        ft = filter_text.strip().lower()
-        filtered_docs = [d for d in available_doctors if ft in d.get("full_name", "").lower() or ft in d.get("specialty", "").lower() or ft in d.get("qualification", "").lower()]
-
-    if filtered_docs:
-        doc_labels = {d["doctor_id"]: f"{d.get('full_name')} — {d.get('qualification','')} ({d.get('currency','')}{d.get('consultation_fee',0)})" for d in filtered_docs}
-        doc_options = [d["doctor_id"] for d in filtered_docs]
-        # Use radio for clearer single-choice selection and better visibility
-        chosen_doc_id = st.radio(
-            "👨‍⚕️ Choose preferred doctor",
-            options=doc_options,
-            format_func=lambda did: doc_labels.get(did, did),
-            key=f"hitl_doctor_{patient_id}",
+    with st.container(border=True):
+        st.warning(f"📋 Confirm Appointment — {action}")
+        st.caption(
+            f"Patient: {patient_nm} · Doctor: {doctor} ({specialty}) · Available: {days_str} · Fee: {currency} {fee}"
         )
-        chosen_doctor = next((d for d in filtered_docs if d.get("doctor_id") == chosen_doc_id), None)
-        if chosen_doctor:
-            doctor = chosen_doctor.get("full_name", doctor)
-            # Update available slots/days to reflect chosen doctor
-            avail_slots = chosen_doctor.get("available_slots", avail_slots)
-            avail_days = chosen_doctor.get("available_days", avail_days)
 
-    col_slot, col_date = st.columns(2)
-    with col_slot:
-        chosen_slot = st.selectbox(
-            "⏰ Choose time slot",
-            options=avail_slots if avail_slots else [time_slot],
-            key=f"hitl_slot_{st.session_state.current_patient_id}",
+        # Doctor selection
+        available_doctors = pending.get("available_doctors", [])
+        chosen_doctor = None
+
+        show_all_key = f"hitl_show_all_{patient_id}"
+        try:
+            show_all = st.checkbox("Show all doctors", key=show_all_key)
+        except Exception:
+            show_all = False
+
+        if show_all:
+            all_docs = DoctorLookupTool().search_doctors()
+            if all_docs:
+                available_doctors = all_docs
+
+        filter_key = f"hitl_filter_{patient_id}"
+        filter_text = st.text_input(
+            "Filter doctors by name or specialty", key=filter_key
         )
-    with col_date:
-        chosen_date_obj = st.date_input(
-            "📅 Appointment date",
-            value=default_date,
-            min_value=datetime.now().date(),
-            key=f"hitl_date_{st.session_state.current_patient_id}",
-        )
-        chosen_date = chosen_date_obj.strftime("%Y-%m-%d")
+        filtered_docs = available_doctors
+        if filter_text:
+            ft = filter_text.strip().lower()
+            filtered_docs = [
+                d
+                for d in available_doctors
+                if ft in d.get("full_name", "").lower()
+                or ft in d.get("specialty", "").lower()
+                or ft in d.get("qualification", "").lower()
+            ]
 
-    is_date_valid = bool(chosen_date_obj >= datetime.now().date())
+        if filtered_docs:
+            doc_labels = {
+                d["doctor_id"]: f"{d.get('full_name')} — {d.get('qualification', '')} ({d.get('currency', '')}{d.get('consultation_fee', 0)})"
+                for d in filtered_docs
+            }
+            doc_options = [d["doctor_id"] for d in filtered_docs]
+            chosen_doc_id = st.radio(
+                "👨‍⚕️ Choose preferred doctor",
+                options=doc_options,
+                format_func=lambda did: doc_labels.get(did, did),
+                key=f"hitl_doctor_{patient_id}",
+            )
+            chosen_doctor = next(
+                (d for d in filtered_docs if d.get("doctor_id") == chosen_doc_id),
+                None,
+            )
+            if chosen_doctor:
+                doctor = chosen_doctor.get("full_name", doctor)
+                avail_slots = chosen_doctor.get("available_slots", avail_slots)
+                avail_days = chosen_doctor.get("available_days", avail_days)
 
-    col_confirm, col_cancel = st.columns(2)
-    with col_confirm:
-        if st.button("✅ Confirm Appointment", type="primary", use_container_width=True, disabled=not is_date_valid):
-            with st.spinner("Processing..."):
-                tool = AppointmentTool()
-                if action.lower() == "cancel":
-                    appts = tool.list_appointments(patient_id=pending["patient_id"])
-                    scheduled = [a for a in appts if a.get("status") == "Scheduled"]
-                    result = tool.cancel_appointment(scheduled[0]["appointment_id"]) if scheduled else \
-                             {"status": "Error", "message": "No scheduled appointment found."}
-                elif action.lower() == "reschedule":
-                    appts = tool.list_appointments(patient_id=pending["patient_id"])
-                    scheduled = [a for a in appts if a.get("status") in ("Scheduled", "Rescheduled")]
-                    result = tool.reschedule_appointment(scheduled[0]["appointment_id"], chosen_date, chosen_slot) \
-                             if scheduled else {"status": "Error", "message": "No appointment to reschedule."}
-                else:
-                    # If user selected a different doctor in HITL, use that doctor's id
-                    doctor_id_to_book = (chosen_doctor.get("doctor_id") if chosen_doctor else pending.get("doctor_id", "DOC001"))
-                    result = tool.book_appointment(
-                        patient_id=pending["patient_id"],
-                        doctor_id=doctor_id_to_book,
-                        date=chosen_date,
-                        time_slot=chosen_slot,
-                        reason="Patient requested via MediAssist AI",
-                        patient_name=patient_nm,
-                        doctor_name=doctor,
+        col_slot, col_date = st.columns(2)
+        with col_slot:
+            chosen_slot = st.selectbox(
+                "⏰ Choose time slot",
+                options=avail_slots if avail_slots else [time_slot],
+                key=f"hitl_slot_{st.session_state.current_patient_id}",
+            )
+        with col_date:
+            chosen_date_obj = st.date_input(
+                "📅 Appointment date",
+                value=default_date,
+                min_value=datetime.now().date(),
+                key=f"hitl_date_{st.session_state.current_patient_id}",
+            )
+            chosen_date = chosen_date_obj.strftime("%Y-%m-%d")
+
+        is_date_valid = bool(chosen_date_obj >= datetime.now().date())
+
+        col_confirm, col_cancel = st.columns(2)
+        with col_confirm:
+            if st.button(
+                "✅ Confirm Appointment",
+                type="primary",
+                use_container_width=True,
+                disabled=not is_date_valid,
+            ):
+                with st.spinner("Processing..."):
+                    tool = AppointmentTool()
+                    if action.lower() == "cancel":
+                        appts = tool.list_appointments(
+                            patient_id=pending["patient_id"]
+                        )
+                        scheduled = [
+                            a for a in appts if a.get("status") == "Scheduled"
+                        ]
+                        result = (
+                            tool.cancel_appointment(scheduled[0]["appointment_id"])
+                            if scheduled
+                            else {
+                                "status": "Error",
+                                "message": "No scheduled appointment found.",
+                            }
+                        )
+                    elif action.lower() == "reschedule":
+                        appts = tool.list_appointments(
+                            patient_id=pending["patient_id"]
+                        )
+                        scheduled = [
+                            a
+                            for a in appts
+                            if a.get("status") in ("Scheduled", "Rescheduled")
+                        ]
+                        result = (
+                            tool.reschedule_appointment(
+                                scheduled[0]["appointment_id"],
+                                chosen_date,
+                                chosen_slot,
+                            )
+                            if scheduled
+                            else {
+                                "status": "Error",
+                                "message": "No appointment to reschedule.",
+                            }
+                        )
+                    else:
+                        doctor_id_to_book = (
+                            chosen_doctor.get("doctor_id")
+                            if chosen_doctor
+                            else pending.get("doctor_id", "DOC001")
+                        )
+                        result = tool.book_appointment(
+                            patient_id=pending["patient_id"],
+                            doctor_id=doctor_id_to_book,
+                            date=chosen_date,
+                            time_slot=chosen_slot,
+                            reason="Patient requested via MediAssist AI",
+                            patient_name=patient_nm,
+                            doctor_name=doctor,
+                        )
+
+                    if result.get("status") == "Success":
+                        appt = result.get("appointment", {})
+                        confirm_msg = (
+                            f"✅ **Appointment {action}d Successfully!**\n\n"
+                            f"**ID:** `{appt.get('appointment_id', 'N/A')}`  |  "
+                            f"**Doctor:** {appt.get('doctor_name', doctor)}\n"
+                            f"**Date:** {appt.get('appointment_date', chosen_date)}  |  "
+                            f"**Time:** {appt.get('time_slot', chosen_slot)}\n"
+                            f"**Status:** {appt.get('status', 'Confirmed')}"
+                        )
+                        st.toast("Appointment confirmed!", icon="🎉")
+                    else:
+                        confirm_msg = f"❌ **{action} Failed:** {result.get('message', 'Unknown error.')}"
+                        st.toast("Action failed.", icon="❌")
+
+                    curr_session["chat_history"].append(
+                        {
+                            "role": "assistant",
+                            "content": confirm_msg,
+                            "agent_info": "Appointment Agent (Confirmed)",
+                        }
                     )
+                    curr_session["hitl_pending"] = None
+                    st.rerun()
 
-                if result.get("status") == "Success":
-                    appt = result.get("appointment", {})
-                    msg = (
-                        f"✅ **Appointment {action}d Successfully!**\n\n"
-                        f"**ID:** `{appt.get('appointment_id', 'N/A')}`  |  "
-                        f"**Doctor:** {appt.get('doctor_name', doctor)}\n"
-                        f"**Date:** {appt.get('appointment_date', chosen_date)}  |  "
-                        f"**Time:** {appt.get('time_slot', chosen_slot)}\n"
-                        f"**Status:** {appt.get('status', 'Confirmed')}"
-                    )
-                    st.toast("Appointment confirmed!", icon="🎉")
-                else:
-                    msg = f"❌ **{action} Failed:** {result.get('message', 'Unknown error.')}"
-                    st.toast("Action failed.", icon="❌")
-
+        with col_cancel:
+            if st.button("✕ Decline", use_container_width=True):
                 curr_session["chat_history"].append(
-                    {"role": "assistant", "content": msg, "agent_info": "Appointment Agent (Confirmed)"}
+                    {
+                        "role": "assistant",
+                        "content": "Appointment action was **declined**. No changes were made to your records.",
+                        "agent_info": "Appointment Agent (Declined)",
+                    }
                 )
                 curr_session["hitl_pending"] = None
+                st.toast("Declined.", icon="ℹ️")
                 st.rerun()
-
-    with col_cancel:
-        if st.button("✕ Decline", use_container_width=True):
-            curr_session["chat_history"].append({
-                "role": "assistant",
-                "content": "Appointment action was **declined**. No changes were made to your records.",
-                "agent_info": "Appointment Agent (Declined)",
-            })
-            curr_session["hitl_pending"] = None
-            st.toast("Declined.", icon="ℹ️")
-            st.rerun()
-
-
-# ─── Chat History ──────────────────────────────────────────────────────────────
-for message in curr_session["chat_history"]:
-    role = message["role"]
-    content = message["content"]
-    agent_info = message.get("agent_info", None)
-
-    with st.chat_message(role):
-        if agent_info and role == "assistant":
-            st.markdown(f"<div class='node-tag'>⬡ {agent_info}</div>", unsafe_allow_html=True)
-        st.markdown(content)
-
-# ─── HITL Confirmation (Rendered AT THE BOTTOM of the chat thread) ──────────────
-render_hitl_confirmation()
 
 # ─── PDF Banner ────────────────────────────────────────────────────────────────
 if curr_session.get("uploaded_pdf_name"):
     st.markdown(
         f'<div class="pdf-banner">📄 <b>Attached:</b> {curr_session.get("uploaded_pdf_name")}'
-        f' — Indexed with SentenceTransformers & FAISS</div>',
+        f" — Indexed with SentenceTransformers &amp; FAISS</div>",
         unsafe_allow_html=True,
     )
 
-st.markdown("</div>", unsafe_allow_html=True)  # close main-wrapper
 
-
-# ─── Core message-processing pipeline ─────────────────────────────────────────
+# ─── Core Message Processing Pipeline ─────────────────────────────────────────
 def process_user_message(prompt: str):
     if not isinstance(prompt, str) or not prompt.strip():
         return
@@ -937,7 +975,8 @@ def process_user_message(prompt: str):
         st.markdown(prompt.strip())
 
     messages_history = [
-        HumanMessage(content=str(m["content"])) if m["role"] == "user"
+        HumanMessage(content=str(m["content"]))
+        if m["role"] == "user"
         else AIMessage(content=str(m["content"]))
         for m in session["chat_history"]
         if isinstance(m.get("content"), str)
@@ -965,7 +1004,7 @@ def process_user_message(prompt: str):
                 final_state = st.session_state.graph_app.invoke(initial_state)
                 response = final_state.get(
                     "final_response",
-                    "I'm unable to process your request at the moment."
+                    "I'm unable to process your request at the moment.",
                 )
                 routed_node = (
                     final_state.get("current_intent", "Supervisor Routed").capitalize()
@@ -975,14 +1014,19 @@ def process_user_message(prompt: str):
                 agent_outputs = final_state.get("agent_outputs", {})
                 pending_action = agent_outputs.get("appointment_pending")
 
-                st.markdown(f"<div class='node-tag'>⬡ {routed_node}</div>", unsafe_allow_html=True)
+                st.markdown(
+                    f"<div class='node-tag'>⬡ {routed_node}</div>",
+                    unsafe_allow_html=True,
+                )
                 st.markdown(response)
 
-                session["chat_history"].append({
-                    "role": "assistant",
-                    "content": response,
-                    "agent_info": routed_node,
-                })
+                session["chat_history"].append(
+                    {
+                        "role": "assistant",
+                        "content": response,
+                        "agent_info": routed_node,
+                    }
+                )
 
                 if pending_action:
                     session["hitl_pending"] = pending_action
@@ -994,37 +1038,68 @@ def process_user_message(prompt: str):
 
 
 # ─── Bottom Input Bar ───────────────────────────────────────────────────────────
+chat_prompt = None
+
 if curr_session.get("hitl_pending"):
-    st.info("⏳ Please **confirm or decline** the appointment above before sending a new message.")
+    st.info(
+        "⏳ Please **confirm or decline** the appointment above before sending a new message."
+    )
 else:
-    # ── Action buttons row (FIXED to bottom left of chat_input) ─────────────────
-    st.markdown('<div id="bottom-actions-container" class="bottom-actions-row">', unsafe_allow_html=True)
+    # Voice Input Expander
+    st.markdown('<div class="voice-expander">', unsafe_allow_html=True)
+    with st.expander("🎙️ Voice Input", expanded=False):
+        st.caption("Record your message, then stop. Transcription is automatic.")
+        audio_value = st.audio_input(
+            label="Microphone",
+            label_visibility="collapsed",
+            key=f"voice_input_{st.session_state.current_patient_id}",
+        )
+        if audio_value is not None:
+            raw_bytes = audio_value.read()
+            audio_hash = hashlib.md5(raw_bytes).hexdigest()
+            if st.session_state.processed_audio_hash != audio_hash:
+                from utils.voice_input import transcribe_audio
 
-    act_col1, act_col2 = st.columns([1, 1])
+                with st.spinner("🎙️ Transcribing…"):
+                    transcribed = transcribe_audio(raw_bytes, filename="audio.webm")
+                if transcribed:
+                    st.session_state.queued_prompt = transcribed
+                    st.session_state.processed_audio_hash = audio_hash
+                    st.toast(f"🎙️ Heard: *{transcribed}*", icon="🎤")
+                    st.rerun()
+                else:
+                    st.session_state.processed_audio_hash = None
+                    st.caption("Could not transcribe audio — please try again.")
+    st.markdown("</div>", unsafe_allow_html=True)
 
-    with act_col1:
-        with st.popover("📎", help="Upload a medical PDF"):
-            st.markdown("**📄 Upload Medical PDF**")
-            st.caption("Lab reports, blood work, prescriptions")
-            uploaded_file = st.file_uploader(
-                "PDF",
-                type=["pdf"],
-                key=f"pdf_uploader_{st.session_state.current_patient_id}",
-                label_visibility="collapsed",
-            )
-            if uploaded_file is not None:
-                if curr_session.get("uploaded_pdf_name") != uploaded_file.name:
-                    with st.spinner("Indexing with SentenceTransformers + FAISS…"):
-                        from utils.rag_pipeline import AdvancedRAGPipeline
-                        rag = AdvancedRAGPipeline()
-                        res = rag.process_pdf_bytes(
-                            uploaded_file.getvalue(), filename=uploaded_file.name
-                        )
-                        if res.get("status") == "Success":
-                            curr_session["rag_pipeline"] = rag
-                            curr_session["uploaded_pdf_name"] = uploaded_file.name
-                            st.success(f"Indexed {res.get('num_chunks')} chunks ✓")
-                            curr_session["chat_history"].append({
+    # PDF Upload Button — fixed beside chat input
+    st.markdown(
+        '<div id="pdf-upload-btn" class="pdf-upload-row">', unsafe_allow_html=True
+    )
+    with st.popover("📎", help="Upload a medical PDF"):
+        st.markdown("**📄 Upload Medical PDF**")
+        st.caption("Lab reports, blood work, prescriptions")
+        uploaded_file = st.file_uploader(
+            "PDF",
+            type=["pdf"],
+            key=f"pdf_uploader_{st.session_state.current_patient_id}",
+            label_visibility="collapsed",
+        )
+        if uploaded_file is not None:
+            if curr_session.get("uploaded_pdf_name") != uploaded_file.name:
+                with st.spinner("Indexing with SentenceTransformers + FAISS…"):
+                    from utils.rag_pipeline import AdvancedRAGPipeline
+
+                    rag = AdvancedRAGPipeline()
+                    res = rag.process_pdf_bytes(
+                        uploaded_file.getvalue(), filename=uploaded_file.name
+                    )
+                    if res.get("status") == "Success":
+                        curr_session["rag_pipeline"] = rag
+                        curr_session["uploaded_pdf_name"] = uploaded_file.name
+                        st.success(f"Indexed {res.get('num_chunks')} chunks ✓")
+                        curr_session["chat_history"].append(
+                            {
                                 "role": "assistant",
                                 "content": (
                                     f"📄 **Lab Report Indexed:** `{uploaded_file.name}` "
@@ -1032,42 +1107,25 @@ else:
                                     "Ask me to explain, summarize, or flag abnormal values!"
                                 ),
                                 "agent_info": "Report RAG Pipeline",
-                            })
-                            st.toast(f"'{uploaded_file.name}' indexed!", icon="📄")
-                            st.rerun()
-                        else:
-                            st.error(f"Failed: {res.get('message')}")
-
-    with act_col2:
-        audio_value = st.audio_input(
-            "🎤",
-            key=f"voice_input_{st.session_state.current_patient_id}",
-        )
-        if audio_value is not None:
-            audio_bytes = audio_value.read()
-            if audio_bytes and st.session_state.get("_last_audio_bytes") != audio_bytes:
-                st.session_state["_last_audio_bytes"] = audio_bytes
-                from utils.voice_input import transcribe_audio
-                with st.spinner("🎙️ Transcribing…"):
-                    transcribed = transcribe_audio(audio_bytes, filename="audio.webm")
-                if transcribed:
-                    st.toast(f"🎙️ Heard: *{transcribed}*", icon="🎤")
-                    st.session_state.queued_prompt = transcribed
-                    st.rerun()
-
+                            }
+                        )
+                        st.toast(f"'{uploaded_file.name}' indexed!", icon="📄")
+                        st.rerun()
+                    else:
+                        st.error(f"Failed: {res.get('message')}")
     st.markdown("</div>", unsafe_allow_html=True)
 
-    # ── Chat input pill ──────────────────────────────────────────────────────────
+    # Chat Input
     chat_prompt = st.chat_input("Ask MediAssist AI anything about your health…")
 
-    # ── Process prompt ───────────────────────────────────────────────────────────
-    final_prompt = None
-    if st.session_state.get("queued_prompt"):
-        final_prompt = st.session_state.queued_prompt
-        st.session_state.queued_prompt = None
-    elif isinstance(chat_prompt, str) and chat_prompt.strip():
-        final_prompt = chat_prompt
 
-    if isinstance(final_prompt, str) and final_prompt.strip():
-        process_user_message(final_prompt)
+# ─── Process Prompt ───────────────────────────────────────────────────────────
+final_prompt = None
+if st.session_state.get("queued_prompt"):
+    final_prompt = st.session_state.queued_prompt
+    st.session_state.queued_prompt = None
+elif isinstance(chat_prompt, str) and chat_prompt.strip():
+    final_prompt = chat_prompt
 
+if isinstance(final_prompt, str) and final_prompt.strip():
+    process_user_message(final_prompt)
